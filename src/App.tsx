@@ -7,7 +7,7 @@ function App() {
 
   return (
 
-    <BrowserRouter>
+    <BrowserRouter basename='/WebsiteTinTuc/'>
       <Routes>
         <Route path="/" element={<TrangChu />} />
         {/* Đường dẫn cho trang chi tiết tin tức */}
