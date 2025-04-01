@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom"; // Import useParams để lấy tham số từ URL
 import "./chitiet.css";
 import Header from "../../components/HeaderComponent/Header";
