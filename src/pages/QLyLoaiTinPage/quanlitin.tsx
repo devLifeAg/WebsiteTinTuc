@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import AdminHeader from '../../components/AdminHeaderComponent/AdminHeader';
 import Footer from '../../components/FooterComponent/Footer';
-import { showErrorToast } from '../../components/ToastService/ToastService';
 
 const API_BASE = "https://apiwebsitetintuc-production.up.railway.app/api";
 
@@ -58,10 +57,16 @@ const QuanlyTin = () => {
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+
+    const newValue =
+      type === "checkbox" && e.target instanceof HTMLInputElement
+        ? e.target.checked
+        : value;
+
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: newValue,
     }));
   };
 

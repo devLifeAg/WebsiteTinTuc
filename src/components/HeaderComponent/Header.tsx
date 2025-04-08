@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ nhomTin, loaiTin }) => {
         } else if (type === 'loaitin') {
             navigate(`/tintuc?id_loaitin=${id}`, { state: { nhomTin, loaiTin } });
         }else{
-            navigate(`/tintuc`, { state: { nhomTin, loaiTin } });
+            navigate(`/`, { state: { nhomTin, loaiTin } });
         }
     };
 
