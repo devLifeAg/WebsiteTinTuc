@@ -1,0 +1,128 @@
+.ql-nhomtin-container {
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  form input {
+    flex: 1;
+    padding: 0.5rem;
+  }
+  
+  form button {
+    padding: 0.5rem 1rem;
+    background: #155dfc;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  table, th, td {
+    border: 1px solid #ddd;
+  }
+  
+  th, td {
+    padding: 0.75rem;
+    text-align: center;
+  }
+  
+  .message {
+    margin-bottom: 1rem;
+    color: green;
+  }
+  
+  .btn-edit {
+    padding: 6px 12px;
+    background-color: #3b82f6; /* xanh dương */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-edit:hover {
+    background-color: #2563eb;
+  }
+  
+  .btn-delete {
+    padding: 6px 12px;
+    background-color: #ef4444; /* đỏ */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-delete:hover {
+    background-color: #dc2626;
+  }
+
+  form input {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .btn-edit {
+    padding: 6px 12px;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    margin-right: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-edit:hover {
+    background-color: #2563eb;
+  }
+  
+  .btn-delete {
+    padding: 6px 12px;
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+  
+  .btn-delete:hover {
+    background-color: #dc2626;
+  }
+  
+  .btn-on {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    background: #22c55e;
+    cursor: pointer;
+  }
+  
+  .btn-off {
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: none;
+    color: white;
+    background: #ef4444;
+    cursor: pointer;
+  }
+  

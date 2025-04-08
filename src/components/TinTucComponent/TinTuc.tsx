@@ -4,6 +4,7 @@ import "./TinTucList.css";
 import dayjs from 'dayjs';
 import { Link } from "react-router-dom"; // Import Link từ react-router-dom
 import { useLocation } from "react-router-dom";
+import { toSlug } from "../../Helper/MyHelper"; // hoặc đường dẫn phù hợp với cấu trúc thư mục
 
 // Define the props type for TinTuc component
 interface TinTucProps {
@@ -71,7 +72,7 @@ const TinTuc: React.FC<TinTucProps> = ({ Tin, loaiTin, nhomTin }) => {
           return (
             <div className="news-card-v2" key={index}>
               <img
-                src={`https://apiwebsitetintuc-production.up.railway.app/hinhbao/${item.hinhdaidien}`} // Update path if necessary
+                src={`${item.hinhdaidien}`} // Update path if necessary
                 alt="ảnh tin"
                 className="thumb"
               />
@@ -92,7 +93,7 @@ const TinTuc: React.FC<TinTucProps> = ({ Tin, loaiTin, nhomTin }) => {
                 <h3 className="text-xl font-semibold">
                   {/* Sử dụng Link để điều hướng tới trang chi tiết và truyền nhomTin, loaiTin */}
                   <Link
-                    to={`/chitiet/${item.id_tin}`} // Địa chỉ trang chi tiết
+                    to={`/${toSlug(item.tieude)}/${item.id_tin}`} // Địa chỉ trang chi tiết
                     state={{ nhomTin, loaiTin }} // Truyền nhomTin và loaiTin qua state
                     className="text-blue-600"
                   >
