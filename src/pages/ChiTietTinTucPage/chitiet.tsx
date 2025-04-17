@@ -7,6 +7,7 @@ import AdvanceSearch from "../../components/AdvanceSearchComponent/AdvanceSearch
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from 'dayjs';
+import { showSuccessToast, showErrorToast } from '../../components/ToastService/ToastService';
 
 interface TinTuc {
   id_tin: number;
@@ -34,6 +35,7 @@ const ChiTietTinTuc = () => {
   const [showForm, setShowForm] = useState(false);
   const [captcha, setCaptcha] = useState("");
   const [formData, setFormData] = useState({ email: "", noidung: "", maXacNhan: "" });
+  const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
 
   const generateCaptcha = () => {
     const code = Math.random().toString(36).substring(2, 7).toUpperCase();
@@ -41,7 +43,6 @@ const ChiTietTinTuc = () => {
   };
 
   useEffect(() => {
-    console.log("ID TIN:", id_tin); // <- Kiểm tra có giá trị không
     // Fetch dữ liệu từ API dựa trên id_tin
     const fetchData = async () => {
       try {
@@ -66,9 +67,13 @@ const ChiTietTinTuc = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/api/binhluan/${id_tin}?limit=${commentLimit}`);
+        const res = await fetch(`https://apiwebsitetintuc-production.up.railway.app/api/tin/${id_tin}/binhluan`);
         const data = await res.json();
-        if (data.success) setComments(data.comments);
+        if (Array.isArray(data)) {
+          setComments(data);
+        } else {
+          showErrorToast("Dữ liệu bình luận không hợp lệ");
+        }
       } catch (err) {
         console.error("Lỗi khi tải bình luận:", err);
       }
@@ -84,17 +89,17 @@ const ChiTietTinTuc = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     if (!formData.email || !formData.noidung || formData.maXacNhan !== captcha) {
-      alert("Vui lòng điền đầy đủ và đúng mã xác nhận!");
+      showErrorToast("Vui lòng điền đầy đủ và đúng mã xác nhận!");
       return;
     }
 
     if (!emailRegex.test(formData.email)) {
-      alert("Email không đúng định dạng!");
+      showErrorToast("Email không đúng định dạng!");
       return;
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/binhluan", {
+      const res = await fetch("https://apiwebsitetintuc-production.up.railway.app/api/binhluan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -107,16 +112,28 @@ const ChiTietTinTuc = () => {
       const data = await res.json();
 
       if (res.status === 201) {
-        alert("Bình luận đã được gửi và đang chờ quản trị viên duyệt!");
-        // Sau khi người dùng bấm OK -> reload lại trang
-        window.location.reload();
+        setShowForm(false);
+        showSuccessToast(data.message);
+        handleCloseBinhLuan();
       } else {
-        alert(data.message || "Đã có lỗi xảy ra khi gửi bình luận.");
+        showErrorToast('Đã có lỗi xảy ra khi gửi bình luận.');
       }
     } catch (err) {
       console.error("Lỗi gửi bình luận:", err);
-      alert("Không thể kết nối đến máy chủ.");
+      showErrorToast("Không thể kết nối đến máy chủ.");
     }
+  };
+
+  const toggleExpand = (index: number) => {
+    setExpandedIndexes((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
+    );
+  };
+
+  const handleCloseBinhLuan = () => {
+    setShowForm(false);          // Ẩn form bình luận
+    setFormData({ email: "", noidung: "", maXacNhan: "" }); // Reset input
+    generateCaptcha(); // Sinh lại captcha mới
   };
 
 
@@ -166,22 +183,40 @@ const ChiTietTinTuc = () => {
               <div className="mt-12 p-4 bg-gray-50 rounded">
                 <h2 className="text-xl font-bold mb-4">Bình luận</h2>
 
-                {comments.map((bl, index) => (
-                  <div key={index} className="mb-4 border-b pb-2">
-                    <div className="flex justify-between items-center">
-                      <p className="font-semibold">{bl.email}</p>
-                      <p className="text-sm text-gray-500">
-                        {dayjs(bl.thoigian).format("DD/MM/YYYY HH:mm")}
+                {comments.map((bl, index) => {
+                  const isExpanded = expandedIndexes.includes(index);
+                  return (
+                    <div key={index} className="mb-4 border-b pb-2">
+                      <div className="flex justify-between items-center">
+                        <p className="font-semibold">{bl.email}</p>
+                        <p className="text-sm text-gray-500">
+                          {dayjs(bl.thoigian).format("DD/MM/YYYY HH:mm")}
+                        </p>
+                      </div>
+
+                      <p
+                        className={`${isExpanded ? "" : "line-clamp-2"
+                          } transition-all`}
+                      >
+                        {bl.noidung}
                       </p>
+
+                      {bl.noidung.length > 100 && (
+                        <button
+                          onClick={() => toggleExpand(index)}
+                          className="text-blue-500 hover:underline mt-1 text-sm"
+                        >
+                          {isExpanded ? "Thu gọn" : "Xem thêm"}
+                        </button>
+                      )}
                     </div>
-                    <p>{bl.noidung}</p>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {comments.length >= commentLimit && (
                   <button
                     onClick={() => setCommentLimit(commentLimit + 4)}
-                    className="text-blue-600 hover:underline mt-2"
+                    className="text-blue-600 hover:underline mt-2 me-20 cursor-pointer"
                   >
                     Xem thêm bình luận
                   </button>
@@ -189,7 +224,7 @@ const ChiTietTinTuc = () => {
 
                 {!showForm && (
                   <button
-                    className="mt-4 text-blue-600 hover:underline"
+                    className="mt-4 text-blue-600 hover:underline cursor-pointer"
                     onClick={() => setShowForm(true)}
                   >
                     Viết bình luận
@@ -228,8 +263,14 @@ const ChiTietTinTuc = () => {
                       />
                     </div>
                     <button
+                      onClick={handleCloseBinhLuan}
+                      className="bg-red-600 text-white px-4 py-2 rounded mt-2 me-4 cursor-pointer"
+                    >
+                      Đóng
+                    </button>
+                    <button
                       onClick={handleSubmitComment}
-                      className="bg-blue-600 text-white px-4 py-2 rounded mt-2"
+                      className="bg-blue-600 text-white px-4 py-2 rounded mt-2 cursor-pointer"
                     >
                       Gửi bình luận
                     </button>

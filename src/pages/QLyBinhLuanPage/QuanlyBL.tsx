@@ -3,10 +3,10 @@ import axios from "axios";
 import AdminHeader from '../../components/AdminHeaderComponent/AdminHeader';
 import Footer from '../../components/FooterComponent/Footer';
 import dayjs from 'dayjs';
-// import { showErrorToast } from '../../components/ToastService/ToastService';
+import { showSuccessToast, showErrorToast } from '../../components/ToastService/ToastService';
 
 interface BinhLuan {
-  id: number;
+  id_binhluan: number;
   email: string;
   thoigian: string;
   noidung: string;
@@ -15,9 +15,9 @@ interface BinhLuan {
   tieuDeTin?: string;
 }
 
-const QuanLyBinhLuan = () => {
+const QuanLyBinhLuan: React.FC = () => {
   const [dsBinhLuan, setDsBinhLuan] = useState<BinhLuan[]>([]);
-  const [trangThaiLoc, setTrangThaiLoc] = useState("tatca");
+  const [trangThaiLoc, setTrangThaiLoc] = useState("-1");
   const [ngayBatDau, setNgayBatDau] = useState("");
   const [ngayKetThuc, setNgayKetThuc] = useState("");
   const [xemDialog, setXemDialog] = useState(false);
@@ -33,32 +33,27 @@ const QuanLyBinhLuan = () => {
       });
 
       let data = response.data.data;
-
-      if (trangThaiLoc !== "tatca") {
-        data = data.filter((bl: BinhLuan) => String(bl.trangthai) === trangThaiLoc);
+      if (trangThaiLoc != "-1") {
+        data = data.filter((bl: BinhLuan) => String(bl.trangthai) == trangThaiLoc);
       }
 
       setDsBinhLuan(data);
     } catch (error) {
+      showErrorToast('Lỗi khi lấy dữ liệu bình luận');
       console.error("Lỗi khi lấy dữ liệu bình luận:", error);
     }
   };
 
   useEffect(() => {
-    // if (ngayBatDau && ngayKetThuc) {
-    //   fetchBinhLuan();
-    // }
     fetchBinhLuan();
-  }, [ngayBatDau, ngayKetThuc, trangThaiLoc]);
+  }, []);
 
   const handleTrangThaiLocChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setTrangThaiLoc(e.target.value);
   };
 
   const handleTimKiem = () => {
-    if (ngayBatDau && ngayKetThuc) {
-      fetchBinhLuan();
-    }
+    fetchBinhLuan();
   };
 
   const moDialogCapNhat = (bl: BinhLuan) => {
@@ -67,15 +62,17 @@ const QuanLyBinhLuan = () => {
   };
 
   const xacNhanCapNhat = async () => {
+    // console.log(binhLuanDangChon?.id_binhluan);
     if (binhLuanDangChon) {
       try {
-        const newStatus = binhLuanDangChon.trangthai === 0 ? 1 : 0;
-        await axios.put(`http://localhost:8000/api/binhluan/${binhLuanDangChon.id}`, {
-          trangthai: newStatus,
+        const res = await axios.post(`https://apiwebsitetintuc-production.up.railway.app/api/binhluan/${binhLuanDangChon.id_binhluan}`, {
+          _method: "PUT",
         });
+        const message = res.data.message;
+        showSuccessToast(message);
         fetchBinhLuan();
-      } catch (err) {
-        console.error("Lỗi khi cập nhật bình luận:", err);
+      } catch {
+        showErrorToast('Có lỗi khi cập nhật bình luận');
       }
     }
     setXemDialog(false);
@@ -113,9 +110,9 @@ const QuanLyBinhLuan = () => {
             onChange={handleTrangThaiLocChange}
             className="border border-gray-300 p-3 rounded w-full"
           >
-            <option value="tatca">Tất cả</option>
-            <option value="1">Đã duyệt</option>
-            <option value="0">Chưa duyệt</option>
+            <option value="-1">Tất cả</option>
+            <option value="true">Đã duyệt</option>
+            <option value="false">Chưa duyệt</option>
           </select>
           <button
             onClick={handleTimKiem}
@@ -125,8 +122,8 @@ const QuanLyBinhLuan = () => {
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full border border-gray-300 text-base text-center shadow-sm">
+        <div className="overflow-x-auto max-h-[600px] overflow-y-auto border border-gray-300 rounded">
+          <table className="w-full text-base text-center">
             <thead className="bg-slate-100 text-gray-700 font-semibold">
               <tr>
                 <th className="border px-4 py-3">Email</th>
@@ -134,32 +131,30 @@ const QuanLyBinhLuan = () => {
                 <th className="border px-4 py-3">Nội dung</th>
                 <th className="border px-4 py-3">Trạng thái</th>
                 <th className="border px-4 py-3">ID tin</th>
-                <th className="border px-4 py-3">Tiêu đề tin</th>
                 <th className="border px-4 py-3">Hành động</th>
               </tr>
             </thead>
             <tbody>
               {dsBinhLuan.map((bl) => (
-                <tr key={bl.id} className="hover:bg-gray-50">
+                <tr key={bl.id_binhluan} className="hover:bg-gray-50">
                   <td className="border px-4 py-3 align-top">{bl.email}</td>
                   <td className="border px-4 py-3 align-top">{dayjs(bl.thoigian).format('DD/MM/YYYY HH:mm:ss')}</td>
                   <td className="border px-4 py-3 text-left align-top">{bl.noidung}</td>
                   <td className="border px-4 py-3 align-top">
                     <span
-                      className={`inline-block min-w-[120px] text-center px-3 py-1 rounded-full text-white font-semibold ${bl.trangthai == 1 ? "bg-green-500" : "bg-gray-500"
+                      className={`inline-block min-w-[120px] text-center px-3 py-1 rounded-full text-white font-semibold ${bl.trangthai ? "bg-green-500" : "bg-gray-500"
                         }`}
                     >
-                      {bl.trangthai == 1 ? "Đã duyệt" : "Chưa duyệt"}
+                      {bl.trangthai ? "Đã duyệt" : "Chưa duyệt"}
                     </span>
                   </td>
                   <td className="border px-4 py-3 align-top">{bl.id_tin}</td>
-                  <td className="border px-4 py-3 text-left align-top">{bl.tieuDeTin || '-'}</td>
                   <td className="border px-4 py-3 align-top">
                     <button
                       onClick={() => moDialogCapNhat(bl)}
-                      className="bg-yellow-400 hover:bg-yellow-500 px-5 py-1 rounded text-sm font-semibold"
+                      className={`text-white whitespace-nowrap px-5 py-1 rounded text-sm font-semibold ${bl.trangthai ? "!bg-red-500" : "!bg-blue-500"}`}
                     >
-                      Cập nhật
+                      {bl.trangthai ? "Bỏ duyệt" : "Duyệt"}
                     </button>
                   </td>
                 </tr>
@@ -168,26 +163,28 @@ const QuanLyBinhLuan = () => {
           </table>
         </div>
 
+        {/* Dialog xác nhận */}
         {xemDialog && binhLuanDangChon && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-            <div className="bg-white p-8 rounded shadow-xl max-w-md w-full">
-              <p className="text-xl font-medium mb-6">
-                {binhLuanDangChon.trangthai === 0
-                  ? "Bạn có muốn duyệt bình luận này?"
-                  : "Bạn có muốn bỏ duyệt bình luận này?"}
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
+            <div className="bg-white rounded-md shadow-md p-6 w-full max-w-xs">
+              <h2 className="text-lg font-semibold text-gray-900 mb-2 text-center">Xác nhận</h2>
+              <p className="text-sm text-gray-700 text-center mb-6">
+                {!binhLuanDangChon.trangthai
+                  ? "Bạn có chắc muốn duyệt bình luận này?"
+                  : "Bạn có chắc muốn bỏ duyệt bình luận này?"}
               </p>
-              <div className="flex justify-end gap-6">
-                <button
-                  onClick={xacNhanCapNhat}
-                  className="bg-indigo-600 text-white px-6 py-2 rounded hover:bg-indigo-700"
-                >
-                  Xác nhận
-                </button>
+              <div className="flex justify-center gap-6 text-sm font-medium">
                 <button
                   onClick={huyDialog}
-                  className="bg-gray-300 px-6 py-2 rounded hover:bg-gray-400"
+                  className="text-blue-600 hover:underline"
                 >
-                  Hủy
+                  HỦY
+                </button>
+                <button
+                  onClick={xacNhanCapNhat}
+                  className="text-red-600 hover:underline"
+                >
+                  XÁC NHẬN
                 </button>
               </div>
             </div>
