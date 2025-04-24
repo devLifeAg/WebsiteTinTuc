@@ -96,7 +96,7 @@ const ThemSuaTin: React.FC = () => {
 
     const isFormValid = () => {
         let flag = false;
-        if (!id_tin && formData.hinhdaidien == '') {
+        if (!id_tin && !file) {
             showErrorToast('bạn chưa tải ảnh lên');
         } else if (formData.tieude.trim() == '') {
             showErrorToast('Tiêu đề không được bỏ trống')
