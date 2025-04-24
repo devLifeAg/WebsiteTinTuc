@@ -82,7 +82,7 @@ const Header: React.FC = () => {
                 <h1
                     className={`text-3xl font-bold text-center text-white transition-all absolute left-1/2 transform -translate-x-1/2`}
                 >
-                    Trang Quản Lý Tin Tức 24h
+                    Quản Lý Tin Tức 24h
                 </h1>
             </div>
         </header>
