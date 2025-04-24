@@ -199,7 +199,7 @@ const Header: React.FC<HeaderProps> = ({ nhomTin, loaiTin }) => {
                             {/* Nút tìm có cùng chiều cao và màu nổi bật hơn */}
                             <button
                                 onClick={handleSearchSubmit}
-                                className="ms-3 h-[40px] px-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-md transition duration-200"
+                                className="cursor-pointer ms-3 h-[40px] px-4 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-md transition duration-200"
                             >
                                 Tìm
                             </button>
