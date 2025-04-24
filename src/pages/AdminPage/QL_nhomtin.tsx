@@ -3,7 +3,7 @@ import axios from 'axios';
 import './QL_nhomtin.css';
 import AdminHeader from '../../components/AdminHeaderComponent/AdminHeader';
 import Footer from '../../components/FooterComponent/Footer';
-import {showErrorToast } from '../../components/ToastService/ToastService';
+import { showErrorToast } from '../../components/ToastService/ToastService';
 import {
   Dialog,
   DialogTitle,
@@ -45,6 +45,11 @@ const QL_nhomtin: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (form.ten_nhomtin.trim() == '') {
+      showErrorToast('Tên nhóm tin không được bỏ trống!');
+      return;
+    }
     try {
       if (editId) {
         await axios.put(`https://apiwebsitetintuc-production.up.railway.app/api/suanhomtin/${editId}`, form);
@@ -77,29 +82,29 @@ const QL_nhomtin: React.FC = () => {
   //   }
   // };
 
-      const handleConfirmDelete = async () => {
-          if (deleteId === null) return;
-  
-          try {
-              const res = await axios.delete(`https://apiwebsitetintuc-production.up.railway.app/api/xoanhomtin/${deleteId}`);
-                  setMessage(res.data.message);
-              fetchData();
-          } catch (error: any) {
-              if (error.response && error.response.data && error.response.data.message) {
-                setMessage(error.response.data.message);
-              } else {
-                setMessage('Đã xảy ra lỗi khi xóa nhóm tin.');
-              }
-          } finally {
-              setOpenConfirm(false);
-              setDeleteId(null);
-          }
-      };
-  
-      const handleDeleteClick = (id: number) => {
-          setDeleteId(id);
-          setOpenConfirm(true);
-      };
+  const handleConfirmDelete = async () => {
+    if (deleteId === null) return;
+
+    try {
+      const res = await axios.delete(`https://apiwebsitetintuc-production.up.railway.app/api/xoanhomtin/${deleteId}`);
+      setMessage(res.data.message);
+      fetchData();
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.message) {
+        setMessage(error.response.data.message);
+      } else {
+        setMessage('Đã xảy ra lỗi khi xóa nhóm tin.');
+      }
+    } finally {
+      setOpenConfirm(false);
+      setDeleteId(null);
+    }
+  };
+
+  const handleDeleteClick = (id: number) => {
+    setDeleteId(id);
+    setOpenConfirm(true);
+  };
 
   const handleToggleTrangThai = async (nt: NhomTin) => {
     try {
@@ -121,7 +126,7 @@ const QL_nhomtin: React.FC = () => {
     <>
       <AdminHeader />
       <div className='mt-24'></div>
-      <div className="ql-nhomtin-container mb-16 min-h-screen">
+      <div className="ql-nhomtin-container min-h-screen">
         <h2>Quản lý nhóm tin</h2>
 
         <form onSubmit={handleSubmit}>
@@ -131,7 +136,6 @@ const QL_nhomtin: React.FC = () => {
             placeholder="Tên nhóm tin"
             value={form.ten_nhomtin}
             onChange={handleChange}
-            required
           />
           <button type="submit">{editId ? 'Cập nhật' : 'Thêm'}</button>
         </form>

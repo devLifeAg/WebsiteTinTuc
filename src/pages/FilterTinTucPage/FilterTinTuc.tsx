@@ -30,7 +30,8 @@ const Filter: React.FC = () => {
     const { state } = useLocation(); // Lấy state từ location (nhomTin và loaiTin)
     const [nhomTin] = useState(state?.nhomTin || []); // Nhận nhomTin từ state
     const [loaiTin] = useState(state?.loaiTin || []); // Nhận loaiTin từ state
-    // const [title, setTitle] = useState(String);
+    const [showAdvanceSearch, setShowAdvanceSearch] = useState(window.innerWidth >= 910);
+
     useEffect(() => {
         const fetchTinTuc = async () => {
             // setLoading(true);
@@ -53,6 +54,12 @@ const Filter: React.FC = () => {
         };
 
         fetchTinTuc();
+        const handleResize = () => {
+            setShowAdvanceSearch(window.innerWidth >= 910);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, [idNhomTin, idLoaiTin]);
 
     return (
@@ -61,12 +68,18 @@ const Filter: React.FC = () => {
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <main className="flex-grow mt-24 mb-16 flex gap-4">
-                    <div className="w-7/10">
+                <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
                         <TinTuc Tin={tinTuc} loaiTin={loaiTin} nhomTin={nhomTin} />
                     </div>
-                    <div className="w-3/10">
-                        <AdvanceSearch nhomTin={nhomTin} loaiTin={loaiTin} />
-                    </div>
+
+                    {showAdvanceSearch && (
+                        <div className="w-3/10">
+                            <AdvanceSearch
+                                nhomTin={nhomTin}
+                                loaiTin={loaiTin}
+                            />
+                        </div>
+                    )}
                 </main>
             </LocalizationProvider>
 

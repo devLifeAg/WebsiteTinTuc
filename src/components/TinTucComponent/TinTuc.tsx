@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 // import { TinTucProps } from "./types"; // Create a separate type file for props if needed
 import "./TinTucList.css";
 import dayjs from 'dayjs';
-import { Link } from "react-router-dom"; // Import Link từ react-router-dom
-import { useLocation } from "react-router-dom";
+// import { Link } from "react-router-dom"; // Import Link từ react-router-dom
+import { useLocation, useNavigate } from "react-router-dom";
 import { toSlug } from "../../Helper/MyHelper"; // hoặc đường dẫn phù hợp với cấu trúc thư mục
 
 // Define the props type for TinTuc component
@@ -35,10 +35,36 @@ interface TinTucProps {
 const TinTuc: React.FC<TinTucProps> = ({ Tin, loaiTin, nhomTin }) => {
   const [visibleCount, setVisibleCount] = useState(6); // Show 4 items initially
   const [title, setTitle] = useState<string>("");
+  const location = useLocation();
+  const navigate = useNavigate(); // dùng để điều hướng thủ công
 
-  const location = useLocation();  // Lấy location từ React Router
+  const handleTitleClick = async (idTin: number, slug: string) => {
+    // Tạo key cookie riêng cho tin này
+    const cookieKey = `tin_da_xem_${idTin}`;
+
+    // Kiểm tra xem đã có cookie cho tin này chưa
+    const isAlreadyViewed = document.cookie.split(';').some((cookie) => cookie.trim().startsWith(`${cookieKey}=`));
+
+    if (!isAlreadyViewed) {
+      try {
+        // Nếu chưa có cookie, gọi API để cập nhật số lượt xem
+        await fetch(`https://apiwebsitetintuc-production.up.railway.app/api/cap-nhat-xem-tin/${idTin}`, {
+          method: 'GET',
+        });
+      } catch (error) {
+        console.error('Lỗi khi cập nhật số lượt xem:', error);
+      }
+
+      // Đánh dấu đã xem tin này bằng cách lưu cookie (để trong 5 phút)
+      document.cookie = `${cookieKey}=true; max-age=${5 * 60}; path=/`; // Cookie tồn tại 5 phút
+    }
+
+    // Sau khi gọi API, chuyển hướng sang trang chi tiết
+    navigate(`/${slug}/${idTin}`, { state: { nhomTin, loaiTin } });
+  };
 
   useEffect(() => {
+    const currentUrl = window.location.href;
     const queryParams = new URLSearchParams(location.search);
     const idLoaiTin = queryParams.get('id_loaitin');
     const idNhomTin = queryParams.get('id_nhomtin');
@@ -51,8 +77,10 @@ const TinTuc: React.FC<TinTucProps> = ({ Tin, loaiTin, nhomTin }) => {
     } else if (idNhomTin) {
       const nhom = nhomTin.find((nhom) => nhom.id_nhomtin === Number(idNhomTin));
       setTitle(nhom ? nhom.ten_nhomtin : "Nhóm tin không xác định");
+    } else if (currentUrl.includes('tim-kiem')) {
+      setTitle("Kết quả tìm kiếm");
     } else {
-      setTitle("Trang Chủ");
+      setTitle("Trang Chủ"); // Otherwise, set it to "Trang Chủ"
     }
   }, [location, loaiTin, nhomTin]);
 
@@ -91,14 +119,12 @@ const TinTuc: React.FC<TinTucProps> = ({ Tin, loaiTin, nhomTin }) => {
                   <small>{formattedDate}</small> {/* Hiển thị ngày đã được định dạng */}
                 </div>
                 <h3 className="text-xl font-semibold">
-                  {/* Sử dụng Link để điều hướng tới trang chi tiết và truyền nhomTin, loaiTin */}
-                  <Link
-                    to={`/${toSlug(item.tieude)}/${item.id_tin}`} // Địa chỉ trang chi tiết
-                    state={{ nhomTin, loaiTin }} // Truyền nhomTin và loaiTin qua state
-                    className="text-blue-600"
+                  <span
+                    className="text-blue-600 cursor-pointer hover:underline"
+                    onClick={() => handleTitleClick(item.id_tin, toSlug(item.tieude))}
                   >
                     {item.tieude}
-                  </Link>
+                  </span>
                 </h3>
                 <p className="mt-2 text-gray-600">{item.mota}</p>
 

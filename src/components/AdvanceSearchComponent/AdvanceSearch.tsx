@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { TextField, Select, MenuItem, Button, InputLabel, FormControl, Box, Typography } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { Dayjs } from 'dayjs';
-
+import { showErrorToast } from '../../components/ToastService/ToastService';
+import { useNavigate } from 'react-router-dom';
 
 // Nhận prop nhomTin từ TrangChu.tsx
 interface NhomTinProps {
@@ -24,6 +25,7 @@ const AdvanceSearch: React.FC<NhomTinProps> = ({ nhomTin, loaiTin }) => {
     const [startDate, setStartDate] = useState<Dayjs | null>(null);
     const [endDate, setEndDate] = useState<Dayjs | null>(null);
     const [filteredNewsTypes, setFilteredNewsTypes] = useState<any[]>([]);
+    const navigate = useNavigate();
 
     // Lọc loại tin khi chọn nhóm tin
     useEffect(() => {
@@ -37,8 +39,22 @@ const AdvanceSearch: React.FC<NhomTinProps> = ({ nhomTin, loaiTin }) => {
     }, [newsGroup, loaiTin]);
 
     const handleSearch = () => {
-        // Xử lý tìm kiếm ở đây
-        console.log({ titleOrContent, newsGroup, newsType, startDate, endDate });
+        const formattedStartDate = startDate ? startDate.format('YYYY-MM-DD') : '';
+        const formattedEndDate = endDate ? endDate.format('YYYY-MM-DD') : '';
+
+        if (!titleOrContent && !newsGroup && !newsType && !formattedStartDate && !formattedEndDate) {
+            showErrorToast('Phải có ít nhất một tiêu chí tìm kiếm!');
+            return;
+        }
+
+        const params = new URLSearchParams();
+        if (titleOrContent) params.append('titleOrContent', titleOrContent);
+        if (newsGroup) params.append('newsGroup', newsGroup);
+        if (newsType) params.append('newsType', newsType);
+        if (formattedStartDate) params.append('startDate', formattedStartDate);
+        if (formattedEndDate) params.append('endDate', formattedEndDate);
+
+        navigate(`/tim-kiem?${params.toString()}`, { state: { nhomTin, loaiTin } });
     };
 
     return (

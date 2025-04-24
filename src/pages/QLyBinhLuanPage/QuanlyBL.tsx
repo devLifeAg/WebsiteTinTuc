@@ -116,7 +116,7 @@ const QuanLyBinhLuan: React.FC = () => {
           </select>
           <button
             onClick={handleTimKiem}
-            className="bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 font-semibold w-full"
+            className="cursor-pointer bg-indigo-600 text-white px-6 py-3 rounded hover:bg-indigo-700 font-semibold w-full"
           >
             Tìm
           </button>

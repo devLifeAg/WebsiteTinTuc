@@ -94,8 +94,33 @@ const ThemSuaTin: React.FC = () => {
         return input.replace('T', ' ') + ':00'; // "2025-04-08T12:42" → "2025-04-08 12:42:00"
     };
 
+    const isFormValid = () => {
+        let flag = false;
+        if (!id_tin && formData.hinhdaidien == '') {
+            showErrorToast('bạn chưa tải ảnh lên');
+        } else if (formData.tieude.trim() == '') {
+            showErrorToast('Tiêu đề không được bỏ trống')
+        } else if (formData.mota.trim() == '') {
+            showErrorToast('Mô tả không được bỏ trống')
+        } else if (formData.tacgia.trim() == '') {
+            showErrorToast('Tác giả không được bỏ trống')
+        } else if (formData.id_loaitin == 0) {
+            showErrorToast('Bạn chưa chọn loại tin');
+        } else if (formData.ngaydangtin == null) {
+            showErrorToast('Bạn chưa chọn ngày giờ đăng tin');
+        } else if (formData.noidung.trim() == '') {
+            showErrorToast('Nội dung tin không được bỏ trống')
+        } else {
+            flag = true;
+        }
+        return flag;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!isFormValid()) {
+            return;
+        }
         const form = new FormData();
         form.append('tieude', formData.tieude);
         if (file) {
@@ -200,7 +225,6 @@ const ThemSuaTin: React.FC = () => {
                                 value={formData.tieude}
                                 onChange={handleChange}
                                 className="border px-3 py-2 rounded w-full"
-                                required
                             />
                         </div>
 
@@ -235,7 +259,6 @@ const ThemSuaTin: React.FC = () => {
                             value={formData.mota}
                             onChange={handleChange}
                             className="border border-gray-300 px-3 py-2 rounded w-full h-36 resize-none"
-                            required
                         />
                     </div>
                     <div className="flex flex-col md:flex-row md:space-x-4 w-full">
@@ -248,7 +271,6 @@ const ThemSuaTin: React.FC = () => {
                                 value={formData.tacgia}
                                 onChange={handleChange}
                                 className="border border-gray-300 px-3 py-2 rounded w-full"
-                                required
                             />
                         </div>
 
@@ -260,7 +282,6 @@ const ThemSuaTin: React.FC = () => {
                                 value={formData.id_loaitin}
                                 onChange={handleChange}
                                 className="border border-gray-300 px-3 py-2 rounded w-full"
-                                required
                             >
                                 <option value="">-- Chọn loại tin --</option>
                                 {loaiTinList.map((loai) => (
@@ -280,7 +301,6 @@ const ThemSuaTin: React.FC = () => {
                                 value={formData.ngaydangtin}
                                 onChange={handleChange}
                                 className="border border-gray-300 px-3 py-2 rounded w-full"
-                                required
                             />
                         </div>
                     </div>
@@ -291,7 +311,6 @@ const ThemSuaTin: React.FC = () => {
                             value={formData.noidung}
                             onChange={handleChange}
                             className="border border-gray-300 px-3 py-2 rounded w-full h-108 resize-none"
-                            required
                         />
                     </div>
 

@@ -74,6 +74,11 @@ const QuanlyTin = () => {
       id_nhomtin: Number(form.id_nhomtin),
       trangthai: Boolean(form.trangthai),
     };
+    if(payload.ten_loaitin.trim() == '' || payload.id_nhomtin == 0 ){
+      showErrorToast('Tên loại tin và nhóm tin không được bỏ trống!');
+      return;
+    }
+
 
     try {
       if (dangSua !== null) {
@@ -181,7 +186,7 @@ const QuanlyTin = () => {
 
           <button
             onClick={handleThemOrCapNhat}
-            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 w-full font-semibold"
+            className="cursor-pointer bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 w-full font-semibold"
           >
             {dangSua !== null ? "Cập nhật" : "Thêm"}
           </button>
@@ -190,7 +195,7 @@ const QuanlyTin = () => {
         <div className="mb-6">
           <button
             onClick={handleXoaInput}
-            className="bg-red-600 text-white px-5 py-2 rounded hover:bg-red-700"
+            className="cursor-pointer bg-red-600 text-white px-5 py-2 rounded hover:bg-red-700"
           >
             Xóa nội dung
           </button>

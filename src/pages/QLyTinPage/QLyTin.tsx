@@ -41,7 +41,7 @@ const QLTin: React.FC = () => {
     const [filters, setFilters] = useState({
         startDate: null,
         endDate: null,
-        id_loaitin: '',
+        id_loaitin: '0',
         id_tin: '',
     });
 
@@ -277,15 +277,17 @@ const QLTin: React.FC = () => {
                                     <TableCell sx={{
                                         textAlign: 'center',  // Căn giữa nội dung
                                     }}>
+                                        <div className='flex gap-2 justify-center'>
                                         <Button
                                             variant="contained"
                                             size="small"
-                                            sx={{ marginRight: 1 }}
                                             onClick={() => navigate(`/add-edit-tin/${tin.id_tin}`)}
                                         >
                                             Sửa
                                         </Button>
                                         <Button variant='contained' size="small" color="error" onClick={() => handleDeleteClick(tin.id_tin)}>Xóa</Button>
+                                        </div>
+                                        
                                     </TableCell>
                                 </TableRow>
                             ))}

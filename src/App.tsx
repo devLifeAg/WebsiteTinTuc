@@ -9,6 +9,7 @@ import QLTin from './pages/QLyTinPage/QLyTin';
 import AddEditTin from './pages/QLyTinPage/AddEditTin';
 import QLBL from './pages/QLyBinhLuanPage/QuanlyBL';
 import QLLT from './pages/QLyLoaiTinPage/quanlitin';
+import KetQuaTimKiem from './pages/KetQuaTimKiemPage/KetQuaTimKiem';
 import { ToastContainer } from 'react-toastify';
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
           <Route path="/qlnhomtin" element={<QL_nhomtin />} />
           <Route path="/qlbinhluan" element={<QLBL />} />
           <Route path="/qlloaitin" element={<QLLT />} />
+          <Route path="/tim-kiem" element={<KetQuaTimKiem />} />
         </Routes>
       </BrowserRouter>
     </>

@@ -1,0 +1,19 @@
+/* file: index.css hoặc global.css */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #e0f2fe; /* màu nền track: xanh nhạt */
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #2563eb; /* màu chính: xanh dương */
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #1d4ed8; /* đậm hơn khi hover */
+  }
+  

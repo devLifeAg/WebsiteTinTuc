@@ -9,8 +9,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 const TrangChu: React.FC = () => {
     const [nhomTin, setNhomTin] = useState([]);
     const [loaiTin, setLoaiTin] = useState([]);
-    const [Tin, setTin] = useState([]);
-    // const [filter, setFilter] = useState<{ type: string; id: number | null }>({ type: '', id: null });
+    const [Tin, setTin] = useState<any[]>([]);
+    const [showAdvanceSearch, setShowAdvanceSearch] = useState(window.innerWidth >= 910);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -31,6 +31,12 @@ const TrangChu: React.FC = () => {
         };
 
         fetchData();
+        const handleResize = () => {
+            setShowAdvanceSearch(window.innerWidth >= 910);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
     }, []);
 
     return (
@@ -39,12 +45,18 @@ const TrangChu: React.FC = () => {
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <main className="flex-grow mt-24 mb-16 flex gap-4">
-                    <div className="w-7/10">
+                    <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
                         <TinTuc Tin={Tin} loaiTin={loaiTin} nhomTin={nhomTin} />
                     </div>
-                    <div className="w-3/10">
-                    <AdvanceSearch nhomTin={nhomTin} loaiTin={loaiTin} />
-                    </div>
+
+                    {showAdvanceSearch && (
+                        <div className="w-3/10">
+                            <AdvanceSearch
+                                nhomTin={nhomTin}
+                                loaiTin={loaiTin}
+                            />
+                        </div>
+                    )}
                 </main>
             </LocalizationProvider>
 
