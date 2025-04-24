@@ -130,8 +130,8 @@ const TinTuc: React.FC<TinTucProps> = ({ Tin, loaiTin, nhomTin }) => {
 
                 <div className="mt-3">
                   {/* Cải thiện bố cục của tác giả và lượt xem */}
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-gray-700">tác giả: {item.tacgia}</p>
+                  <div className="flex gap-4">
+                    <p className="text-sm text-gray-700 max-w-[60%] truncate">tác giả: {item.tacgia}</p>
                     <p className="text-sm text-gray-700">lượt xem: {item.solanxem}</p>
                   </div>
                 </div>
