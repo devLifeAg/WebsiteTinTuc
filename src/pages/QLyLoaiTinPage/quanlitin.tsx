@@ -227,13 +227,13 @@ const QuanlyTin = () => {
                   <td className="border px-4 py-2 space-x-2">
                     <button
                       onClick={() => handleSua(lt)}
-                      className="bg-yellow-400 text-black px-4 py-1 rounded hover:bg-yellow-500 font-semibold"
+                      className="cursor-pointer bg-yellow-400 text-black px-4 py-1 rounded hover:bg-yellow-500 font-semibold"
                     >
                       Sửa
                     </button>
                     <button
                       onClick={() => handleXoa(lt.id_loaitin)}
-                      className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 font-semibold"
+                      className="cursor-pointer bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 font-semibold"
                     >
                       Xóa
                     </button>
@@ -255,13 +255,13 @@ const QuanlyTin = () => {
               <div className="flex justify-center gap-6 text-sm font-medium">
                 <button
                   onClick={huyXoa}
-                  className="text-blue-600 hover:underline"
+                  className="cursor-pointer text-blue-600 hover:underline"
                 >
                   HỦY
                 </button>
                 <button
                   onClick={xacNhanXoa}
-                  className="text-red-600 hover:underline"
+                  className="cursor-pointer text-red-600 hover:underline"
                 >
                   XÓA
                 </button>

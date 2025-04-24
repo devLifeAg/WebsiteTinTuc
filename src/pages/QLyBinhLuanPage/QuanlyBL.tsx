@@ -152,7 +152,7 @@ const QuanLyBinhLuan: React.FC = () => {
                   <td className="border px-4 py-3 align-top">
                     <button
                       onClick={() => moDialogCapNhat(bl)}
-                      className={`text-white whitespace-nowrap px-5 py-1 rounded text-sm font-semibold ${bl.trangthai ? "!bg-red-500" : "!bg-blue-500"}`}
+                      className={`cursor-pointer text-white whitespace-nowrap px-5 py-1 rounded text-sm font-semibold ${bl.trangthai ? "!bg-red-500" : "!bg-blue-500"}`}
                     >
                       {bl.trangthai ? "Bỏ duyệt" : "Duyệt"}
                     </button>
@@ -176,13 +176,13 @@ const QuanLyBinhLuan: React.FC = () => {
               <div className="flex justify-center gap-6 text-sm font-medium">
                 <button
                   onClick={huyDialog}
-                  className="text-blue-600 hover:underline"
+                  className="cursor-pointer text-blue-600 hover:underline"
                 >
                   HỦY
                 </button>
                 <button
                   onClick={xacNhanCapNhat}
-                  className="text-red-600 hover:underline"
+                  className="cursor-pointer text-red-600 hover:underline"
                 >
                   XÁC NHẬN
                 </button>
