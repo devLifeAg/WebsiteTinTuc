@@ -7,10 +7,10 @@ const Footer: React.FC = () => {
                 <h3 className="text-center text-3xl font-extrabold mb-4">Website Tin Tức Nhóm 3 - Thực Tập Tốt Nghiệp 2025</h3>
                 <div className='ms-4 me-4 flex flex-col md:flex-row gap-6'>
                     <div className='w-full md:w-[25%]'>
-                        <div className='flex gap-2'>
-                            <div className="font-bold">Giảng viên hướng dẫn: </div>
-                            <div>ThS. Trần Văn Hùng</div>
-                        </div>
+                        <p>
+                            <span className="font-bold">Giảng viên hướng dẫn: </span>
+                            ThS. Trần Văn Hùng
+                        </p>
                         <div className="font-bold">Sinh viên thực hiện:</div>
                         <ul className="list-disc ml-5">
                             <li>Đặng Ngọc Hiếu</li>

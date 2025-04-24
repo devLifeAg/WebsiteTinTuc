@@ -36,6 +36,7 @@ const ChiTietTinTuc = () => {
   const [captcha, setCaptcha] = useState("");
   const [formData, setFormData] = useState({ email: "", noidung: "", maXacNhan: "" });
   const [expandedIndexes, setExpandedIndexes] = useState<number[]>([]);
+  const [showAdvanceSearch, setShowAdvanceSearch] = useState(window.innerWidth >= 910);
 
   const generateCaptcha = () => {
     const code = Math.random().toString(36).substring(2, 7).toUpperCase();
@@ -62,6 +63,12 @@ const ChiTietTinTuc = () => {
     };
 
     fetchData();
+    const handleResize = () => {
+      setShowAdvanceSearch(window.innerWidth >= 910);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [id_tin]); // Chạy lại khi id_tin thay đổi
 
   useEffect(() => {
@@ -150,7 +157,7 @@ const ChiTietTinTuc = () => {
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <main className="flex-grow mt-12 mb-8 flex gap-4">
-          <div className="w-7/10">
+          <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
             <div className="news-container">
               {/* Hiển thị tên loại tin và nhóm tin */}
               <div className="news-category">
@@ -283,9 +290,14 @@ const ChiTietTinTuc = () => {
 
 
 
-          <div className="w-3/10 mt-12">
-            <AdvanceSearch nhomTin={nhomTin} loaiTin={loaiTin} />
-          </div>
+          {showAdvanceSearch && (
+            <div className="w-3/10 mt-12">
+              <AdvanceSearch
+                nhomTin={nhomTin}
+                loaiTin={loaiTin}
+              />
+            </div>
+          )}
         </main>
       </LocalizationProvider>
 
