@@ -195,7 +195,7 @@ const ChiTietTinTuc = () => {
                   return (
                     <div key={index} className="mb-4 border-b pb-2">
                       <div className="flex flex-col sm:flex-row justify-between gap-2">
-                        <p className="font-semibold">{bl.email}</p>
+                        <p className="font-semibold truncate overflow-hidden whitespace-nowrap max-w-full">{bl.email}</p>
                         <p className="text-sm text-gray-500">
                           {dayjs(bl.thoigian).format("DD/MM/YYYY HH:mm")}
                         </p>
