@@ -94,7 +94,7 @@ const TinTuc: React.FC<TinTucProps> = ({ Tin, loaiTin, nhomTin }) => {
       <div className="news-cards-grid">
         {Tin.slice(0, visibleCount).map((item, index) => {
           // Định dạng ngày giờ ngay tại đây
-          const formattedDate = dayjs(item.ngaydangtin).format('DD/MM/YYYY H:m:s');
+          const formattedDate = dayjs(item.ngaydangtin).format('DD/MM/YYYY HH:mm');
           // Tìm tên loại tin từ loaiTin dựa trên id_loaitin của bài tin
           const loaiTinName = loaiTin.find(loai => loai.id_loaitin === item.id_loaitin)?.ten_loaitin || "Chưa xác định";
           return (
@@ -131,8 +131,8 @@ const TinTuc: React.FC<TinTucProps> = ({ Tin, loaiTin, nhomTin }) => {
                 <div className="mt-3">
                   {/* Cải thiện bố cục của tác giả và lượt xem */}
                   <div className="flex gap-4">
-                    <p className="text-sm text-gray-700 max-w-[60%] truncate">tác giả: {item.tacgia}</p>
-                    <p className="text-sm text-gray-700">lượt xem: {item.solanxem}</p>
+                    <p className="text-sm text-gray-700 flex-1 max-w-[60%] truncate">tác giả: {item.tacgia}</p>
+                    <p className="text-sm text-gray-700 flex-1 max-w-[40%] text-right">lượt xem: {item.solanxem}</p>
                   </div>
                 </div>
               </div>
