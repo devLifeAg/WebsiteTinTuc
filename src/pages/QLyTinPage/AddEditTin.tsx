@@ -98,12 +98,12 @@ const ThemSuaTin: React.FC = () => {
         let flag = false;
         if (!id_tin && !file) {
             showErrorToast('bạn chưa tải ảnh lên');
-        } else if (formData.tieude.trim() == '') {
-            showErrorToast('Tiêu đề không được bỏ trống')
-        } else if (formData.mota.trim() == '') {
-            showErrorToast('Mô tả không được bỏ trống')
-        } else if (formData.tacgia.trim() == '') {
-            showErrorToast('Tác giả không được bỏ trống')
+        } else if (formData.tieude.trim() == ''|| formData.tieude.length > 255) {
+            showErrorToast('Tiêu đề không được bỏ trống và phải ít hơn 255 ký tự')
+        } else if (formData.mota.trim() == '' || formData.mota.length > 255) {
+            showErrorToast('Mô tả không được bỏ trống và phải ít hơn 255 ký tự')
+        } else if (formData.tacgia.trim() == ''|| formData.tacgia.length > 20) {
+            showErrorToast('Tác giả không được bỏ trống và phải ít hơn 20 ký tự')
         } else if (formData.id_loaitin == 0) {
             showErrorToast('Bạn chưa chọn loại tin');
         } else if (formData.ngaydangtin == null) {
