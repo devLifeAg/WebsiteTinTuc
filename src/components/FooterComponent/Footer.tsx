@@ -47,10 +47,10 @@ const Footer: React.FC = () => {
                             <span className="font-bold">Link api backend: </span>
                             <a
                                 className="text-blue-500 hover:underline break-all"
-                                href="https://apiwebsitetintuc-production.up.railway.app/"
+                                href="https://apiwebsitetintuc.onrender.com"
                                 target="_blank"
                             >
-                                https://apiwebsitetintuc-production.up.railway.app/
+                                https://apiwebsitetintuc.onrender.com
                             </a>
                         </p>
                         <p>

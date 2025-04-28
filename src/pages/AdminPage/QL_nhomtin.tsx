@@ -27,7 +27,7 @@ const QL_nhomtin: React.FC = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get('https://apiwebsitetintuc-production.up.railway.app/api/nhomtin');
+      const res = await axios.get('https://apiwebsitetintuc.onrender.com/api/nhomtin');
       setNhomTins(res.data.data);
     } catch (err) {
       showErrorToast('Lỗi khi tải nhóm tin: ' + err); // Lỗi từ server trả về
@@ -52,10 +52,10 @@ const QL_nhomtin: React.FC = () => {
     }
     try {
       if (editId) {
-        await axios.put(`https://apiwebsitetintuc-production.up.railway.app/api/suanhomtin/${editId}`, form);
+        await axios.put(`https://apiwebsitetintuc.onrender.com/api/suanhomtin/${editId}`, form);
         setMessage('✔️ Cập nhật thành công');
       } else {
-        await axios.post('https://apiwebsitetintuc-production.up.railway.app/api/themnhomtin', form);
+        await axios.post('https://apiwebsitetintuc.onrender.com/api/themnhomtin', form);
         setMessage('✔️ Thêm thành công');
       }
       setForm({ ten_nhomtin: '', trangthai: 1 });
@@ -71,22 +71,11 @@ const QL_nhomtin: React.FC = () => {
     setEditId(nt.id_nhomtin);
   };
 
-  // const handleDelete = async (id: number) => {
-  //   if (!window.confirm('Bạn có chắc muốn xóa không?')) return;
-  //   try {
-  //     await axios.delete(`https://apiwebsitetintuc-production.up.railway.app/api/xoanhomtin/${id}`);
-  //     setMessage('🗑️ Đã xóa thành công');
-  //     fetchData();
-  //   } catch (err: any) {
-  //     setMessage(err.response?.data?.message || '❌ Không thể xóa nhóm tin');
-  //   }
-  // };
-
   const handleConfirmDelete = async () => {
     if (deleteId === null) return;
 
     try {
-      const res = await axios.delete(`https://apiwebsitetintuc-production.up.railway.app/api/xoanhomtin/${deleteId}`);
+      const res = await axios.delete(`https://apiwebsitetintuc.onrender.com/api/xoanhomtin/${deleteId}`);
       setMessage(res.data.message);
       fetchData();
     } catch (error: any) {
@@ -110,7 +99,7 @@ const QL_nhomtin: React.FC = () => {
     try {
       const updatedTrangThai = nt.trangthai === 1 ? 0 : 1;
 
-      await axios.put(`https://apiwebsitetintuc-production.up.railway.app/api/suanhomtin/${nt.id_nhomtin}`, {
+      await axios.put(`https://apiwebsitetintuc.onrender.com/api/suanhomtin/${nt.id_nhomtin}`, {
         ten_nhomtin: nt.ten_nhomtin,
         trangthai: updatedTrangThai,
       });

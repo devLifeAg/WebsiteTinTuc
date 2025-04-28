@@ -31,7 +31,7 @@ const KetQuaTimKiem: React.FC = () => {
     const [showAdvanceSearch, setShowAdvanceSearch] = useState(window.innerWidth >= 910);
 
     useEffect(() => {
-        const url = new URL('https://apiwebsitetintuc-production.up.railway.app/api/tim-kiem-nang-cao');
+        const url = new URL('https://apiwebsitetintuc.onrender.com/api/tim-kiem-nang-cao');
 
         queryParams.forEach((value, key) => {
             url.searchParams.append(key, value);
@@ -92,11 +92,6 @@ const KetQuaTimKiem: React.FC = () => {
                 </div>
             )}
         </>
-
-        // <div className="pt-28 px-8">
-        //     <h2 className="text-2xl font-bold mb-4">Kết quả tìm kiếm</h2>
-        //     <TinTuc Tin={tin} />
-        // </div>
     );
 };
 

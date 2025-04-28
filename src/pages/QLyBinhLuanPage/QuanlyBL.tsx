@@ -25,7 +25,7 @@ const QuanLyBinhLuan: React.FC = () => {
 
   const fetchBinhLuan = async () => {
     try {
-      const response = await axios.get("https://apiwebsitetintuc-production.up.railway.app/api/binhluan", {
+      const response = await axios.get("https://apiwebsitetintuc.onrender.com/api/binhluan", {
         params: {
           start_date: ngayBatDau,
           end_date: ngayKetThuc,
@@ -65,7 +65,7 @@ const QuanLyBinhLuan: React.FC = () => {
     // console.log(binhLuanDangChon?.id_binhluan);
     if (binhLuanDangChon) {
       try {
-        const res = await axios.post(`https://apiwebsitetintuc-production.up.railway.app/api/binhluan/${binhLuanDangChon.id_binhluan}`, {
+        const res = await axios.post(`https://apiwebsitetintuc.onrender.com/api/binhluan/${binhLuanDangChon.id_binhluan}`, {
           _method: "PUT",
         });
         const message = res.data.message;

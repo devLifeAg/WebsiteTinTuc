@@ -48,7 +48,7 @@ const TinTuc: React.FC<TinTucProps> = ({ Tin, loaiTin, nhomTin }) => {
     if (!isAlreadyViewed) {
       try {
         // Nếu chưa có cookie, gọi API để cập nhật số lượt xem
-        await fetch(`https://apiwebsitetintuc-production.up.railway.app/api/cap-nhat-xem-tin/${idTin}`, {
+        await fetch(`https://apiwebsitetintuc.onrender.com/api/cap-nhat-xem-tin/${idTin}`, {
           method: 'GET',
         });
       } catch (error) {

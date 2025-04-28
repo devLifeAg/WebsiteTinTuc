@@ -15,7 +15,7 @@ const TrangChu: React.FC = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('https://apiwebsitetintuc-production.up.railway.app/api/trangchu');
+                const response = await fetch('https://apiwebsitetintuc.onrender.com/api/trangchu');
 
                 if (!response.ok) {
                     throw new Error(`Lỗi mạng: ${response.status} - ${response.statusText}`);

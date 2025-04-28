@@ -3,7 +3,7 @@ import axios from "axios";
 import AdminHeader from '../../components/AdminHeaderComponent/AdminHeader';
 import Footer from '../../components/FooterComponent/Footer';
 import { showSuccessToast, showErrorToast } from '../../components/ToastService/ToastService';
-const API_BASE = "https://apiwebsitetintuc-production.up.railway.app/api";
+const API_BASE = "https://apiwebsitetintuc.onrender.com/api";
 
 interface LoaiTin {
   id_loaitin: number;

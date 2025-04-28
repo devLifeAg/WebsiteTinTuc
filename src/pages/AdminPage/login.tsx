@@ -45,7 +45,7 @@ const LoginAdminPage: React.FC = () => {
 
     try {
       const res = await axios.post<LoginResponse>(
-        'https://apiwebsitetintuc-production.up.railway.app/api/dangnhap',
+        'https://apiwebsitetintuc.onrender.com/api/dangnhap',
         formData
       );
 

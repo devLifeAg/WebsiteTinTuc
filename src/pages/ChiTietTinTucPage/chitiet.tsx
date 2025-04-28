@@ -48,7 +48,7 @@ const ChiTietTinTuc = () => {
     const fetchData = async () => {
       try {
         if (slug && id_tin) {
-          const response = await fetch(`https://apiwebsitetintuc-production.up.railway.app/api/chitiettin/${id_tin}`);
+          const response = await fetch(`https://apiwebsitetintuc.onrender.com/api/chitiettin/${id_tin}`);
           const result = await response.json();
           if (result.success) {
             setNews(result.data); // Lưu dữ liệu vào state
@@ -74,7 +74,7 @@ const ChiTietTinTuc = () => {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const res = await fetch(`https://apiwebsitetintuc-production.up.railway.app/api/tin/${id_tin}/binhluan`);
+        const res = await fetch(`https://apiwebsitetintuc.onrender.com/api/tin/${id_tin}/binhluan`);
         const data = await res.json();
         if (Array.isArray(data)) {
           setComments(data);
@@ -106,7 +106,7 @@ const ChiTietTinTuc = () => {
     }
 
     try {
-      const res = await fetch("https://apiwebsitetintuc-production.up.railway.app/api/binhluan", {
+      const res = await fetch("https://apiwebsitetintuc.onrender.com/api/binhluan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

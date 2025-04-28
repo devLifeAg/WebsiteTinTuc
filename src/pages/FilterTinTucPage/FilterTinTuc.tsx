@@ -36,7 +36,7 @@ const Filter: React.FC = () => {
         const fetchTinTuc = async () => {
             // setLoading(true);
             try {
-                let url = 'https://apiwebsitetintuc-production.up.railway.app/api/tintuc?';
+                let url = 'https://apiwebsitetintuc.onrender.com/api/tintuc?';
                 if (idNhomTin) {
                     url += `id_nhomtin=${idNhomTin}`;
                 } else if (idLoaiTin) {

@@ -52,8 +52,8 @@ const QLTin: React.FC = () => {
     const fetchData = async () => {
         try {
             const [tinRes, loaiTinRes] = await Promise.all([
-                axios.get('https://apiwebsitetintuc-production.up.railway.app/api/danhsachtin'),
-                axios.get('https://apiwebsitetintuc-production.up.railway.app/api/loaitin')
+                axios.get('https://apiwebsitetintuc.onrender.com/api/danhsachtin'),
+                axios.get('https://apiwebsitetintuc.onrender.com/api/loaitin')
             ]);
             setDsTin(tinRes.data);
             setDsLoaiTin(loaiTinRes.data);
@@ -66,7 +66,7 @@ const QLTin: React.FC = () => {
         try {
             const { startDate, endDate, id_loaitin, id_tin } = filters;
             console.log('Fetching data with id_loaitin:', id_loaitin); // Kiểm tra giá trị của id_loaitin
-            const tinRes = await axios.get('https://apiwebsitetintuc-production.up.railway.app/api/danhsachtin', {
+            const tinRes = await axios.get('https://apiwebsitetintuc.onrender.com/api/danhsachtin', {
                 params: {
                     ngaybd: startDate,
                     ngaykt: endDate,
@@ -93,7 +93,7 @@ const QLTin: React.FC = () => {
         if (deleteId === null) return;
 
         try {
-            const res = await axios.delete(`https://apiwebsitetintuc-production.up.railway.app/api/xoatin/${deleteId}`);
+            const res = await axios.delete(`https://apiwebsitetintuc.onrender.com/api/xoatin/${deleteId}`);
             showSuccessToast(res.data.message);
             fetchTin();
         } catch (error: any) {

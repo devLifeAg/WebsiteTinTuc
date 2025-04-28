@@ -45,14 +45,14 @@ const ThemSuaTin: React.FC = () => {
 
     useEffect(() => {
         // Fetch loại tin
-        fetch('https://apiwebsitetintuc-production.up.railway.app/api/loaitin')
+        fetch('https://apiwebsitetintuc.onrender.com/api/loaitin')
             .then(res => res.json())
             .then((data: LoaiTin[]) => setLoaiTinList(data))
             .catch(console.error);
 
         // Nếu có id_tin, fetch dữ liệu tin
         if (id_tin) {
-            fetch(`https://apiwebsitetintuc-production.up.railway.app/api/chitiettin/${id_tin}`)
+            fetch(`https://apiwebsitetintuc.onrender.com/api/chitiettin/${id_tin}`)
                 .then(res => res.json())
                 .then(json => {
                     const tin: Tin = json.data;
@@ -143,8 +143,8 @@ const ThemSuaTin: React.FC = () => {
         }
 
         const url = isEdit
-            ? `https://apiwebsitetintuc-production.up.railway.app/api/suatin/${id_tin}`
-            : 'https://apiwebsitetintuc-production.up.railway.app/api/themtin';
+            ? `https://apiwebsitetintuc.onrender.com/api/suatin/${id_tin}`
+            : 'https://apiwebsitetintuc.onrender.com/api/themtin';
 
         const res = await fetch(url, {
             method: 'POST',
