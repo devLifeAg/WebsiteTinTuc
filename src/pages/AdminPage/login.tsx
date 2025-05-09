@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './login.css';
 import logo from '/news.png'; // Đường dẫn tuyệt đối từ thư mục public
-// import { showSuccessToast, showErrorToast } from '../../components/ToastService/ToastService';
+import CircularProgress from '@mui/material/CircularProgress';
 
 type LoginForm = {
   tendangnhap: string;
@@ -27,7 +27,7 @@ const LoginAdminPage: React.FC = () => {
 
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -42,6 +42,7 @@ const LoginAdminPage: React.FC = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setIsLoading(true);
 
     try {
       const res = await axios.post<LoginResponse>(
@@ -60,6 +61,8 @@ const LoginAdminPage: React.FC = () => {
       } else {
         setError('Lỗi kết nối tới server.');
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -69,28 +72,40 @@ const LoginAdminPage: React.FC = () => {
         <img src={logo} alt="logo" />
         <h2>Đăng nhập Admin</h2>
 
-        <input
-          type="text"
-          name="tendangnhap"
-          placeholder="Tên đăng nhập"
-          value={formData.tendangnhap}
-          onChange={handleChange}
-          required
-        />
+        {!isLoading ? (
+          <>
+            <input
+              type="text"
+              name="tendangnhap"
+              placeholder="Tên đăng nhập"
+              value={formData.tendangnhap}
+              onChange={handleChange}
+              required
+            />
 
-        <input
-          type="password"
-          name="matkhau"
-          placeholder="Mật khẩu"
-          value={formData.matkhau.toString()}
-          onChange={handleChange}
-          required
-        />
+            <input
+              type="password"
+              name="matkhau"
+              placeholder="Mật khẩu"
+              value={formData.matkhau.toString()}
+              onChange={handleChange}
+              required
+            />
 
-        <button type="submit">Đăng nhập</button>
+            <button type="submit">Đăng nhập</button>
 
-        {error && <p className="error-msg">{error}</p>}
-        {success && <p className="success-msg">{success}</p>}
+            {error && <p className="error-msg">{error}</p>}
+            {success && <p className="success-msg">{success}</p>}
+          </>
+        ) : (
+          <div className="loading-container flex flex-col items-center justify-center text-center mt-6">
+            <CircularProgress size={28} />
+            <p className="mt-4 text-gray-600 text-2xl">Đang kiểm tra tài khoản...</p>
+            <p className="mt-4 text-gray-600 text-2xl">
+              Quá trình có thể mất ít phút để khởi API từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!
+            </p>
+          </div>
+        )}
       </form>
     </div>
   );

@@ -5,11 +5,13 @@ import AdvanceSearch from '../../components/AdvanceSearchComponent/AdvanceSearch
 import TinTuc from '../../components/TinTucComponent/TinTuc';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const TrangChu: React.FC = () => {
     const [nhomTin, setNhomTin] = useState([]);
     const [loaiTin, setLoaiTin] = useState([]);
     const [Tin, setTin] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [showAdvanceSearch, setShowAdvanceSearch] = useState(window.innerWidth >= 910);
 
     useEffect(() => {
@@ -27,6 +29,8 @@ const TrangChu: React.FC = () => {
                 setTin(data.tin);
             } catch (error) {
                 console.error('Lỗi khi lấy dữ liệu từ API:', error);
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -44,22 +48,27 @@ const TrangChu: React.FC = () => {
             <Header nhomTin={nhomTin} loaiTin={loaiTin} />
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <main className="flex-grow mt-24 mb-16 flex gap-4">
-                    <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
-                        <TinTuc Tin={Tin} loaiTin={loaiTin} nhomTin={nhomTin} />
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center flex-grow text-center mt-24 mb-16">
+                        <CircularProgress />
+                        <p className="mt-4 text-gray-600 text-2xl">Đang tải tin tức...</p>
+                        <p className="mt-4 text-gray-600 text-2xl">Quá trình có thể mất ít phút để khởi api từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!</p>
                     </div>
-
-                    {showAdvanceSearch && (
-                        <div className="w-3/10">
-                            <div className="sticky top-28">
-                                <AdvanceSearch
-                                    nhomTin={nhomTin}
-                                    loaiTin={loaiTin}
-                                />
-                            </div>
+                ) : (
+                    <main className="flex-grow mt-24 mb-16 flex gap-4">
+                        <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
+                            <TinTuc Tin={Tin} loaiTin={loaiTin} nhomTin={nhomTin} />
                         </div>
-                    )}
-                </main>
+
+                        {showAdvanceSearch && (
+                            <div className="w-3/10">
+                                <div className="sticky top-28">
+                                    <AdvanceSearch nhomTin={nhomTin} loaiTin={loaiTin} />
+                                </div>
+                            </div>
+                        )}
+                    </main>
+                )}
             </LocalizationProvider>
 
             <Footer />
