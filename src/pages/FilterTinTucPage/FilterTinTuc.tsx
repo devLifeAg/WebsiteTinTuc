@@ -18,7 +18,7 @@ interface TinTucProps {
     solanxem: number;
     tinhot: boolean;
     id_loaitin: number;
-  }
+}
 
 const Filter: React.FC = () => {
     const [tinTuc, setTinTuc] = useState<TinTucProps[]>([]);
@@ -68,16 +68,18 @@ const Filter: React.FC = () => {
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <main className="flex-grow mt-24 mb-16 flex gap-4">
-                <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
+                    <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
                         <TinTuc Tin={tinTuc} loaiTin={loaiTin} nhomTin={nhomTin} />
                     </div>
 
                     {showAdvanceSearch && (
                         <div className="w-3/10">
-                            <AdvanceSearch
-                                nhomTin={nhomTin}
-                                loaiTin={loaiTin}
-                            />
+                            <div className="sticky top-28">
+                                <AdvanceSearch
+                                    nhomTin={nhomTin}
+                                    loaiTin={loaiTin}
+                                />
+                            </div>
                         </div>
                     )}
                 </main>

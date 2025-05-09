@@ -292,10 +292,12 @@ const ChiTietTinTuc = () => {
 
           {showAdvanceSearch && (
             <div className="w-3/10 mt-12">
-              <AdvanceSearch
-                nhomTin={nhomTin}
-                loaiTin={loaiTin}
-              />
+              <div className="sticky top-28">
+                <AdvanceSearch
+                  nhomTin={nhomTin}
+                  loaiTin={loaiTin}
+                />
+              </div>
             </div>
           )}
         </main>

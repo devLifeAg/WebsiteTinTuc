@@ -51,10 +51,12 @@ const TrangChu: React.FC = () => {
 
                     {showAdvanceSearch && (
                         <div className="w-3/10">
-                            <AdvanceSearch
-                                nhomTin={nhomTin}
-                                loaiTin={loaiTin}
-                            />
+                            <div className="sticky top-28">
+                                <AdvanceSearch
+                                    nhomTin={nhomTin}
+                                    loaiTin={loaiTin}
+                                />
+                            </div>
                         </div>
                     )}
                 </main>
