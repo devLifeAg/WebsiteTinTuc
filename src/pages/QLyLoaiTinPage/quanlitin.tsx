@@ -4,6 +4,7 @@ import AdminHeader from '../../components/AdminHeaderComponent/AdminHeader';
 import Footer from '../../components/FooterComponent/Footer';
 import { showSuccessToast, showErrorToast } from '../../components/ToastService/ToastService';
 const API_BASE = "https://apiwebsitetintuc.onrender.com/api";
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface LoaiTin {
   id_loaitin: number;
@@ -28,6 +29,9 @@ const QuanlyTin = () => {
   const [dangSua, setDangSua] = useState<number | null>(null);
   const [hienDialog, setHienDialog] = useState(false);
   const [xoaId, setXoaId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchLoaiTin();
@@ -41,6 +45,8 @@ const QuanlyTin = () => {
     } catch (err) {
       showErrorToast('❌ Lỗi khi lấy loại tin');
       console.error("❌ Lỗi khi lấy loại tin:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,13 +80,14 @@ const QuanlyTin = () => {
       id_nhomtin: Number(form.id_nhomtin),
       trangthai: Boolean(form.trangthai),
     };
-    if(payload.ten_loaitin.trim() == '' || payload.id_nhomtin == 0 ){
+    if (payload.ten_loaitin.trim() == '' || payload.id_nhomtin == 0) {
       showErrorToast('Tên loại tin và nhóm tin không được bỏ trống!');
       return;
     }
 
 
     try {
+      setIsSubmitted(true);
       if (dangSua !== null) {
         await axios.put(`${API_BASE}/sualoaitin/${dangSua}`, payload);
         showSuccessToast('Cập nhật thành công!');
@@ -93,12 +100,14 @@ const QuanlyTin = () => {
       setDangSua(null);
       await fetchLoaiTin();
     } catch (error: any) {
-      showErrorToast('Lỗi: '+ error.response?.data || error.message);
+      showErrorToast('Lỗi: ' + error.response?.data || error.message);
       if (error.response?.data?.errors) {
         showErrorToast(Object.values(error.response.data.errors).join("\n"));
       } else {
         Object.values('Có lỗi xảy ra khi thêm/cập nhật!');
       }
+    } finally {
+      setIsSubmitted(false);
     }
   };
 
@@ -119,6 +128,7 @@ const QuanlyTin = () => {
   const xacNhanXoa = async () => {
     if (xoaId !== null) {
       try {
+        setIsDeleting(true);
         await axios.delete(`${API_BASE}/xoaloaitin/${xoaId}`);
         showSuccessToast('Xóa thành công!');
         await fetchLoaiTin();
@@ -131,6 +141,7 @@ const QuanlyTin = () => {
       }
       setHienDialog(false);
       setXoaId(null);
+      setIsDeleting(false);
     }
   };
 
@@ -146,103 +157,123 @@ const QuanlyTin = () => {
 
   return (
     <>
-    <AdminHeader/>
+      <AdminHeader />
       <div className="min-h-screen p-10 max-w-6xl mt-24 mb-16 mx-auto bg-white rounded-lg shadow-lg">
         <h1 className="text-3xl font-bold text-slate-800 mb-8">🗂️ Quản lý loại tin</h1>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <input
-            name="ten_loaitin"
-            value={form.ten_loaitin}
-            onChange={handleInputChange}
-            placeholder="Tên loại tin"
-            className="border border-gray-300 p-3 rounded w-full"
-          />
-
-          <select
-            name="id_nhomtin"
-            value={form.id_nhomtin}
-            onChange={handleInputChange}
-            className="border border-gray-300 p-3 rounded w-full"
-          >
-            <option value={0}>-- Chọn nhóm tin --</option>
-            {dsNhomTin.map((nt) => (
-              <option key={nt.id_nhomtin} value={nt.id_nhomtin}>
-                {nt.ten_nhomtin}
-              </option>
-            ))}
-          </select>
-
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="trangthai"
-              checked={form.trangthai}
-              onChange={handleInputChange}
-              className="scale-125"
-            />
-            <span className="text-base font-medium">Bật</span>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center flex-grow text-center">
+            <CircularProgress />
+            <p className="mt-4 text-gray-600 text-2xl">Đang tải loại tin...</p>
+            <p className="mt-4 text-gray-600 text-2xl">Quá trình này có thể mất ít thời gian để khởi động api từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!</p>
           </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <input
+                name="ten_loaitin"
+                value={form.ten_loaitin}
+                onChange={handleInputChange}
+                placeholder="Tên loại tin"
+                className="border border-gray-300 p-3 rounded w-full"
+              />
 
-          <button
-            onClick={handleThemOrCapNhat}
-            className="cursor-pointer bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 w-full font-semibold"
-          >
-            {dangSua !== null ? "Cập nhật" : "Thêm"}
-          </button>
-        </div>
+              <select
+                name="id_nhomtin"
+                value={form.id_nhomtin}
+                onChange={handleInputChange}
+                className="border border-gray-300 p-3 rounded w-full"
+              >
+                <option value={0}>-- Chọn nhóm tin --</option>
+                {dsNhomTin.map((nt) => (
+                  <option key={nt.id_nhomtin} value={nt.id_nhomtin}>
+                    {nt.ten_nhomtin}
+                  </option>
+                ))}
+              </select>
 
-        <div className="mb-6">
-          <button
-            onClick={handleXoaInput}
-            className="cursor-pointer bg-red-600 text-white px-5 py-2 rounded hover:bg-red-700"
-          >
-            Xóa nội dung
-          </button>
-        </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="trangthai"
+                  checked={form.trangthai}
+                  onChange={handleInputChange}
+                  className="scale-125"
+                />
+                <span className="text-base font-medium">Bật</span>
+              </div>
 
-        {/* Table scrollable (600px max height) */}
-        <div className="overflow-x-auto max-h-[600px] overflow-y-auto border border-gray-300 rounded">
-          <table className="w-full table-auto text-base text-center">
-            <thead className="bg-slate-100 text-gray-700 font-semibold">
-              <tr>
-                <th className="border px-4 py-3">Tên loại tin</th>
-                <th className="border px-4 py-3">Trạng thái</th>
-                <th className="border px-4 py-3">Nhóm tin</th>
-                <th className="border px-4 py-3">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dsLoaiTin.map((lt) => (
-                <tr key={lt.id_loaitin} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2 text-left">{lt.ten_loaitin}</td>
-                  <td className="border px-4 py-2">
-                    <span className={`inline-block min-w-[80px] px-3 py-1 rounded-full text-white text-sm font-medium ${lt.trangthai ? "bg-green-500" : "bg-gray-500"}`}>
-                      {lt.trangthai ? "Bật" : "Tắt"}
-                    </span>
-                  </td>
-                  <td className="border px-4 py-2">
-                    {dsNhomTin.find((nt) => nt.id_nhomtin === lt.id_nhomtin)?.ten_nhomtin || "Không rõ"}
-                  </td>
-                  <td className="border px-4 py-2 space-x-2">
-                    <button
-                      onClick={() => handleSua(lt)}
-                      className="cursor-pointer bg-yellow-400 text-black px-4 py-1 rounded hover:bg-yellow-500 font-semibold"
-                    >
-                      Sửa
-                    </button>
-                    <button
-                      onClick={() => handleXoa(lt.id_loaitin)}
-                      className="cursor-pointer bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600 font-semibold"
-                    >
-                      Xóa
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              <button
+                onClick={handleThemOrCapNhat}
+                disabled={isSubmitted}
+                className={`w-full font-semibold px-4 py-2 rounded text-white transition-colors duration-300 ${isSubmitted
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-indigo-600 hover:bg-indigo-700 cursor-pointer'
+                  }`}
+              >
+                {isSubmitted
+                  ? (dangSua !== null ? 'Đang cập nhật...' : 'Đang thêm...')
+                  : (dangSua !== null ? 'Cập nhật' : 'Thêm')}
+              </button>
+            </div>
+
+            <div className="mb-6">
+              <button
+                onClick={handleXoaInput}
+                className="cursor-pointer bg-red-600 text-white px-5 py-2 rounded hover:bg-red-700"
+              >
+                Xóa nội dung
+              </button>
+            </div>
+
+            {/* Table scrollable (600px max height) */}
+            <div className="overflow-x-auto max-h-[600px] overflow-y-auto border border-gray-300 rounded">
+              <table className="w-full table-auto text-base text-center">
+                <thead className="bg-slate-100 text-gray-700 font-semibold">
+                  <tr>
+                    <th className="border px-4 py-3">Tên loại tin</th>
+                    <th className="border px-4 py-3">Trạng thái</th>
+                    <th className="border px-4 py-3">Nhóm tin</th>
+                    <th className="border px-4 py-3">Hành động</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dsLoaiTin.map((lt) => (
+                    <tr key={lt.id_loaitin} className="hover:bg-gray-50">
+                      <td className="border px-4 py-2 text-left">{lt.ten_loaitin}</td>
+                      <td className="border px-4 py-2">
+                        <span className={`inline-block min-w-[80px] px-3 py-1 rounded-full text-white text-sm font-medium ${lt.trangthai ? "bg-green-500" : "bg-gray-500"}`}>
+                          {lt.trangthai ? "Bật" : "Tắt"}
+                        </span>
+                      </td>
+                      <td className="border px-4 py-2">
+                        {dsNhomTin.find((nt) => nt.id_nhomtin === lt.id_nhomtin)?.ten_nhomtin || "Không rõ"}
+                      </td>
+                      <td className="border px-4 py-2 space-x-2">
+                        <button
+                          onClick={() => handleSua(lt)}
+                          className="cursor-pointer bg-yellow-400 text-black px-4 py-1 rounded hover:bg-yellow-500 font-semibold"
+                        >
+                          Sửa
+                        </button>
+                        <button
+                          onClick={() => handleXoa(lt.id_loaitin)}
+                          disabled={isDeleting && xoaId === lt.id_loaitin}
+                          className={`px-4 py-1 rounded font-semibold text-white transition-colors duration-300 ${isDeleting && xoaId === lt.id_loaitin
+                              ? 'bg-gray-400 cursor-not-allowed'
+                              : 'bg-red-500 hover:bg-red-600 cursor-pointer'
+                            }`}
+                        >
+                          {isDeleting && xoaId === lt.id_loaitin ? 'Đang xóa...' : 'Xóa'}
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
+
 
         {/* Dialog xác nhận kiểu trung tâm giống bình luận */}
         {hienDialog && (

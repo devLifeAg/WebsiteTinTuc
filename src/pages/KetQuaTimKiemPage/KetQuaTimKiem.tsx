@@ -7,6 +7,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import AdvanceSearch from '../../components/AdvanceSearchComponent/AdvanceSearch';
 import Footer from '../../components/FooterComponent/Footer';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface TinTucProps {
     id_tin: number;
@@ -22,7 +23,7 @@ interface TinTucProps {
 }
 
 const KetQuaTimKiem: React.FC = () => {
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [tin, setTin] = useState<TinTucProps[]>([]);
     const { state } = useLocation(); // Lấy state từ location (nhomTin và loaiTin)
     const [nhomTin] = useState(state?.nhomTin || []); // Nhận nhomTin từ state
@@ -38,7 +39,6 @@ const KetQuaTimKiem: React.FC = () => {
         });
 
         const fetchData = async () => {
-            setLoading(true);
             try {
                 const response = await fetch(url.toString());
                 const data = await response.json();
@@ -61,38 +61,40 @@ const KetQuaTimKiem: React.FC = () => {
 
     return (
         <>
-            {loading ? (
-                <p className="text-gray-600">Đang tải kết quả tìm kiếm...</p>
-            ) : (
-                <div className="flex flex-col min-h-screen">
-                    <Header nhomTin={nhomTin} loaiTin={loaiTin} />
+            <div className="flex flex-col min-h-screen">
+                <Header nhomTin={nhomTin} loaiTin={loaiTin} />
 
-                    <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <main className="flex-grow mt-24 mb-16 flex gap-4">
-                            <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
-                                {tin.length === 0 ? (
-                                    <div className="flex justify-center items-center text-xl">
-                                        Không tìm thấy nội dung bạn muốn tìm
-                                    </div>) : (<TinTuc Tin={tin} loaiTin={loaiTin} nhomTin={nhomTin} />)
-                                }
-                            </div>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center flex-grow text-center mt-24 mb-16">
+                            <CircularProgress />
+                            <p className="mt-4 text-gray-600 text-2xl">Đang tải tìm kiếm nội dung...</p>
+                            <p className="mt-4 text-gray-600 text-2xl">Quá trình này có thể mất ít thời gian để khởi động api từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!</p>
+                        </div>
+                    ) : (<main className="flex-grow mt-24 mb-16 flex gap-4">
+                        <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
+                            {tin.length === 0 ? (
+                                <div className="flex justify-center items-center text-xl">
+                                    Không tìm thấy nội dung bạn muốn tìm
+                                </div>) : (<TinTuc Tin={tin} loaiTin={loaiTin} nhomTin={nhomTin} />)
+                            }
+                        </div>
 
-                            {showAdvanceSearch && (
-                                <div className="w-3/10">
-                                    <div className="sticky top-28">
-                                        <AdvanceSearch
-                                            nhomTin={nhomTin}
-                                            loaiTin={loaiTin}
-                                        />
-                                    </div>
+                        {showAdvanceSearch && (
+                            <div className="w-3/10">
+                                <div className="sticky top-28">
+                                    <AdvanceSearch
+                                        nhomTin={nhomTin}
+                                        loaiTin={loaiTin}
+                                    />
                                 </div>
-                            )}
-                        </main>
-                    </LocalizationProvider>
+                            </div>
+                        )}
+                    </main>)}
+                </LocalizationProvider>
 
-                    <Footer />
-                </div>
-            )}
+                <Footer />
+            </div>
         </>
     );
 };

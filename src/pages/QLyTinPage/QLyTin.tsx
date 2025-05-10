@@ -14,6 +14,7 @@ import AdminHeader from '../../components/AdminHeaderComponent/AdminHeader';
 import Footer from '../../components/FooterComponent/Footer';
 import dayjs from 'dayjs';
 import { showSuccessToast, showErrorToast } from '../../components/ToastService/ToastService';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface Tin {
     id_tin: number;
@@ -38,6 +39,7 @@ const QLTin: React.FC = () => {
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [dsTin, setDsTin] = useState<Tin[]>([]);
     const [dsLoaiTin, setDsLoaiTin] = useState<LoaiTin[]>([]);
+    const [loading, setLoading] = useState(true);
     const [filters, setFilters] = useState({
         startDate: null,
         endDate: null,
@@ -59,13 +61,15 @@ const QLTin: React.FC = () => {
             setDsLoaiTin(loaiTinRes.data);
         } catch (err) {
             console.error('Lỗi khi fetch dữ liệu:', err);
+        } finally {
+            setLoading(false);
         }
     };
 
     const fetchTin = async () => {
         try {
+            setLoading(true);
             const { startDate, endDate, id_loaitin, id_tin } = filters;
-            console.log('Fetching data with id_loaitin:', id_loaitin); // Kiểm tra giá trị của id_loaitin
             const tinRes = await axios.get('https://apiwebsitetintuc.onrender.com/api/danhsachtin', {
                 params: {
                     ngaybd: startDate,
@@ -77,6 +81,8 @@ const QLTin: React.FC = () => {
             setDsTin(tinRes.data);
         } catch (err) {
             showErrorToast('Lỗi khi tải tin: ' + err); // Lỗi từ server trả về
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -182,118 +188,125 @@ const QLTin: React.FC = () => {
                     </Button>
                 </Box>
 
-
-                <TableContainer component={Paper} sx={{
-                    maxHeight: '460px',
-                    overflowY: 'auto',
-                    borderRadius: '10px', // Thêm border radius cho bảng
-                    boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Thêm bóng đổ nhẹ cho bảng
-                    '&::-webkit-scrollbar': {
-                        width: '10px', // Đặt chiều rộng thanh cuộn
-                    },
-                    '&::-webkit-scrollbar-track': {
-                        background: '#f1f1f1', // Màu nền của thanh cuộn
-                        borderRadius: '10px',
-                    },
-                    '&::-webkit-scrollbar-thumb': {
-                        backgroundColor: '#2563EB', // Màu thanh cuộn
-                        borderRadius: '10px',
-                        border: '2px solid #f1f1f1', // Đường viền của thanh cuộn
-                    },
-                    '&::-webkit-scrollbar-thumb:hover': {
-                        backgroundColor: '#1D4ED8', // Màu của thanh cuộn khi hover
-                    },
-                }}>
-                    <Table>
-                        <TableHead sx={{
-                            backgroundColor: '#2563EB',
-                            position: 'sticky', // Giữ TableHead cố định khi cuộn
-                            top: 0, // Vị trí cố định của TableHead
-                            zIndex: 1, // Đảm bảo TableHead luôn nằm trên các phần tử khác khi cuộn
-                        }}>
-                            <TableRow>
-                                <TableCell style={{ width: '50px', fontWeight: 'bold', color: 'white' }}>ID</TableCell>
-                                <TableCell style={{ width: '100px', fontWeight: 'bold', color: 'white' }}>Ảnh</TableCell>
-                                <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Tiêu đề</TableCell>
-                                <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Tác giả</TableCell>
-                                <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Loại tin</TableCell>
-                                <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Ngày đăng</TableCell>
-                                <TableCell style={{ width: '100px', fontWeight: 'bold', color: 'white' }}>Lượt xem</TableCell>
-                                <TableCell style={{ width: '50px' }}></TableCell>
-                                <TableCell style={{ width: '50px' }}></TableCell>
-                                <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Hành động</TableCell>
-                            </TableRow>
-                        </TableHead>
-
-                        <TableBody>
-                            {dsTin.map((tin) => (
-                                <TableRow key={tin.id_tin}>
-                                    <TableCell>{tin.id_tin}</TableCell>
-                                    <TableCell>
-                                        <img src={tin.hinhdaidien} alt="Ảnh tin" width={100} />
-                                    </TableCell>
-                                    <TableCell sx={{
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                    }} style={{ maxWidth: '200px' }}>{tin.tieude}</TableCell>
-                                    <TableCell sx={{
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                    }} style={{ maxWidth: '70px' }}>{tin.tacgia}</TableCell>
-                                    <TableCell sx={{
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                    }} style={{ maxWidth: '70px' }}>
-                                        {
-                                            dsLoaiTin.find(lt => lt.id_loaitin === tin.id_loaitin)?.ten_loaitin || 'Không rõ'
-                                        }
-                                    </TableCell>
-                                    <TableCell sx={{
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                    }} style={{ maxWidth: '120px' }}>{dayjs(tin.ngaydangtin).format('DD/MM/YYYY HH:mm:ss')}</TableCell>
-                                    <TableCell sx={{
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                    }} style={{ maxWidth: '100px' }}>{tin.solanxem}</TableCell>
-                                    <TableCell style={{ minWidth: '60px' }}>
-                                        {tin.tinhot ? (
-                                            <img src="hot.png" alt="Hot" width={30} height={30} />
-                                        ) : null}
-                                    </TableCell>
-                                    <TableCell style={{ minWidth: '60px' }}>
-                                        <img
-                                            src={tin.trangthai ? "visibility.png" : "visible.png"}
-                                            alt="visibility"
-                                            width={30}
-                                            height={30}
-                                        />
-                                    </TableCell>
-                                    <TableCell sx={{
-                                        textAlign: 'center',  // Căn giữa nội dung
-                                    }}>
-                                        <div className='flex gap-2 justify-center'>
-                                        <Button
-                                            variant="contained"
-                                            size="small"
-                                            onClick={() => navigate(`/add-edit-tin/${tin.id_tin}`)}
-                                        >
-                                            Sửa
-                                        </Button>
-                                        <Button variant='contained' size="small" color="error" onClick={() => handleDeleteClick(tin.id_tin)}>Xóa</Button>
-                                        </div>
-                                        
-                                    </TableCell>
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center flex-grow text-center mt-24 mb-16">
+                        <CircularProgress />
+                        <p className="mt-4 text-gray-600 text-2xl">Đang tải tin tức...</p>
+                        <p className="mt-4 text-gray-600 text-2xl">Quá trình này có thể mất ít thời gian để khởi động api từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!</p>
+                    </div>
+                ) : (
+                    <TableContainer component={Paper} sx={{
+                        maxHeight: '460px',
+                        overflowY: 'auto',
+                        borderRadius: '10px', // Thêm border radius cho bảng
+                        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Thêm bóng đổ nhẹ cho bảng
+                        '&::-webkit-scrollbar': {
+                            width: '10px', // Đặt chiều rộng thanh cuộn
+                        },
+                        '&::-webkit-scrollbar-track': {
+                            background: '#f1f1f1', // Màu nền của thanh cuộn
+                            borderRadius: '10px',
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                            backgroundColor: '#2563EB', // Màu thanh cuộn
+                            borderRadius: '10px',
+                            border: '2px solid #f1f1f1', // Đường viền của thanh cuộn
+                        },
+                        '&::-webkit-scrollbar-thumb:hover': {
+                            backgroundColor: '#1D4ED8', // Màu của thanh cuộn khi hover
+                        },
+                    }}>
+                        <Table>
+                            <TableHead sx={{
+                                backgroundColor: '#2563EB',
+                                position: 'sticky', // Giữ TableHead cố định khi cuộn
+                                top: 0, // Vị trí cố định của TableHead
+                                zIndex: 1, // Đảm bảo TableHead luôn nằm trên các phần tử khác khi cuộn
+                            }}>
+                                <TableRow>
+                                    <TableCell style={{ width: '50px', fontWeight: 'bold', color: 'white' }}>ID</TableCell>
+                                    <TableCell style={{ width: '100px', fontWeight: 'bold', color: 'white' }}>Ảnh</TableCell>
+                                    <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Tiêu đề</TableCell>
+                                    <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Tác giả</TableCell>
+                                    <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Loại tin</TableCell>
+                                    <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Ngày đăng</TableCell>
+                                    <TableCell style={{ width: '100px', fontWeight: 'bold', color: 'white' }}>Lượt xem</TableCell>
+                                    <TableCell style={{ width: '50px' }}></TableCell>
+                                    <TableCell style={{ width: '50px' }}></TableCell>
+                                    <TableCell style={{ fontWeight: 'bold', color: 'white' }}>Hành động</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+
+                            <TableBody>
+                                {dsTin.map((tin) => (
+                                    <TableRow key={tin.id_tin}>
+                                        <TableCell>{tin.id_tin}</TableCell>
+                                        <TableCell>
+                                            <img src={tin.hinhdaidien} alt="Ảnh tin" width={100} />
+                                        </TableCell>
+                                        <TableCell sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }} style={{ maxWidth: '200px' }}>{tin.tieude}</TableCell>
+                                        <TableCell sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }} style={{ maxWidth: '70px' }}>{tin.tacgia}</TableCell>
+                                        <TableCell sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }} style={{ maxWidth: '70px' }}>
+                                            {
+                                                dsLoaiTin.find(lt => lt.id_loaitin === tin.id_loaitin)?.ten_loaitin || 'Không rõ'
+                                            }
+                                        </TableCell>
+                                        <TableCell sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }} style={{ maxWidth: '120px' }}>{dayjs(tin.ngaydangtin).format('DD/MM/YYYY HH:mm:ss')}</TableCell>
+                                        <TableCell sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }} style={{ maxWidth: '100px' }}>{tin.solanxem}</TableCell>
+                                        <TableCell style={{ minWidth: '60px' }}>
+                                            {tin.tinhot ? (
+                                                <img src="hot.png" alt="Hot" width={30} height={30} />
+                                            ) : null}
+                                        </TableCell>
+                                        <TableCell style={{ minWidth: '60px' }}>
+                                            <img
+                                                src={tin.trangthai ? "visibility.png" : "visible.png"}
+                                                alt="visibility"
+                                                width={30}
+                                                height={30}
+                                            />
+                                        </TableCell>
+                                        <TableCell sx={{
+                                            textAlign: 'center',  // Căn giữa nội dung
+                                        }}>
+                                            <div className='flex gap-2 justify-center'>
+                                                <Button
+                                                    variant="contained"
+                                                    size="small"
+                                                    onClick={() => navigate(`/add-edit-tin/${tin.id_tin}`)}
+                                                >
+                                                    Sửa
+                                                </Button>
+                                                <Button variant='contained' size="small" color="error" disabled={deleteId === tin.id_tin} onClick={() => handleDeleteClick(tin.id_tin)}>Xóa</Button>
+                                            </div>
+
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
             </div>
             <Footer />
             <Dialog

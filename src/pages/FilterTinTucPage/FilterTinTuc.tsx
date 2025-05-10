@@ -6,6 +6,7 @@ import AdvanceSearch from '../../components/AdvanceSearchComponent/AdvanceSearch
 import TinTuc from '../../components/TinTucComponent/TinTuc';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface TinTucProps {
     id_tin: number;
@@ -22,7 +23,7 @@ interface TinTucProps {
 
 const Filter: React.FC = () => {
     const [tinTuc, setTinTuc] = useState<TinTucProps[]>([]);
-    // const [loading, setLoading] = useState<boolean>(true);
+    const [loading, setLoading] = useState(true);
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const idNhomTin = queryParams.get('id_nhomtin');
@@ -34,7 +35,6 @@ const Filter: React.FC = () => {
 
     useEffect(() => {
         const fetchTinTuc = async () => {
-            // setLoading(true);
             try {
                 let url = 'https://apiwebsitetintuc.onrender.com/api/tintuc?';
                 if (idNhomTin) {
@@ -49,7 +49,7 @@ const Filter: React.FC = () => {
             } catch (error) {
                 console.error('Error fetching tin tuc:', error);
             } finally {
-                // setLoading(false);
+                setLoading(false);
             }
         };
 
@@ -67,22 +67,30 @@ const Filter: React.FC = () => {
             <Header nhomTin={nhomTin} loaiTin={loaiTin} />
 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <main className="flex-grow mt-24 mb-16 flex gap-4">
-                    <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
-                        <TinTuc Tin={tinTuc} loaiTin={loaiTin} nhomTin={nhomTin} />
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center flex-grow text-center mt-24 mb-16">
+                        <CircularProgress />
+                        <p className="mt-4 text-gray-600 text-2xl">Đang tải tin tức...</p>
+                        <p className="mt-4 text-gray-600 text-2xl">Quá trình này có thể mất ít thời gian để khởi động api từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!</p>
                     </div>
-
-                    {showAdvanceSearch && (
-                        <div className="w-3/10">
-                            <div className="sticky top-28">
-                                <AdvanceSearch
-                                    nhomTin={nhomTin}
-                                    loaiTin={loaiTin}
-                                />
-                            </div>
+                ) : (
+                    <main className="flex-grow mt-24 mb-16 flex gap-4">
+                        <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
+                            <TinTuc Tin={tinTuc} loaiTin={loaiTin} nhomTin={nhomTin} />
                         </div>
-                    )}
-                </main>
+
+                        {showAdvanceSearch && (
+                            <div className="w-3/10">
+                                <div className="sticky top-28">
+                                    <AdvanceSearch
+                                        nhomTin={nhomTin}
+                                        loaiTin={loaiTin}
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </main>
+                )}
             </LocalizationProvider>
 
             <Footer />

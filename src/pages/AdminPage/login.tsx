@@ -102,7 +102,7 @@ const LoginAdminPage: React.FC = () => {
             <CircularProgress size={28} />
             <p className="mt-4 text-gray-600 text-2xl">Đang kiểm tra tài khoản...</p>
             <p className="mt-4 text-gray-600 text-2xl">
-              Quá trình có thể mất ít phút để khởi API từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!
+              Quá trình có thể mất thời gian để khởi động API từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!
             </p>
           </div>
         )}

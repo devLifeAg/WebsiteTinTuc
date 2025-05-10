@@ -4,6 +4,7 @@ import AdminHeader from '../../components/AdminHeaderComponent/AdminHeader';
 import Footer from '../../components/FooterComponent/Footer';
 import dayjs from 'dayjs';
 import { showSuccessToast, showErrorToast } from '../../components/ToastService/ToastService';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface BinhLuan {
   id_binhluan: number;
@@ -22,6 +23,8 @@ const QuanLyBinhLuan: React.FC = () => {
   const [ngayKetThuc, setNgayKetThuc] = useState("");
   const [xemDialog, setXemDialog] = useState(false);
   const [binhLuanDangChon, setBinhLuanDangChon] = useState<BinhLuan | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isDuyet, setDuyet] = useState(false);
 
   const fetchBinhLuan = async () => {
     try {
@@ -41,6 +44,8 @@ const QuanLyBinhLuan: React.FC = () => {
     } catch (error) {
       showErrorToast('Lỗi khi lấy dữ liệu bình luận');
       console.error("Lỗi khi lấy dữ liệu bình luận:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -53,6 +58,7 @@ const QuanLyBinhLuan: React.FC = () => {
   };
 
   const handleTimKiem = () => {
+    setLoading(true);
     fetchBinhLuan();
   };
 
@@ -62,8 +68,8 @@ const QuanLyBinhLuan: React.FC = () => {
   };
 
   const xacNhanCapNhat = async () => {
-    // console.log(binhLuanDangChon?.id_binhluan);
     if (binhLuanDangChon) {
+      setDuyet(true);
       try {
         const res = await axios.post(`https://apiwebsitetintuc.onrender.com/api/binhluan/${binhLuanDangChon.id_binhluan}`, {
           _method: "PUT",
@@ -73,6 +79,8 @@ const QuanLyBinhLuan: React.FC = () => {
         fetchBinhLuan();
       } catch {
         showErrorToast('Có lỗi khi cập nhật bình luận');
+      } finally {
+        setDuyet(false);
       }
     }
     setXemDialog(false);
@@ -121,47 +129,70 @@ const QuanLyBinhLuan: React.FC = () => {
             Tìm
           </button>
         </div>
-
-        <div className="overflow-x-auto max-h-[600px] overflow-y-auto border border-gray-300 rounded">
-          <table className="w-full text-base text-center">
-            <thead className="bg-slate-100 text-gray-700 font-semibold">
-              <tr>
-                <th className="border px-4 py-3">Email</th>
-                <th className="border px-4 py-3">Thời gian</th>
-                <th className="border px-4 py-3">Nội dung</th>
-                <th className="border px-4 py-3">Trạng thái</th>
-                <th className="border px-4 py-3">ID tin</th>
-                <th className="border px-4 py-3">Hành động</th>
-              </tr>
-            </thead>
-            <tbody>
-              {dsBinhLuan.map((bl) => (
-                <tr key={bl.id_binhluan} className="hover:bg-gray-50">
-                  <td className="border px-4 py-3 align-top">{bl.email}</td>
-                  <td className="border px-4 py-3 align-top">{dayjs(bl.thoigian).format('DD/MM/YYYY HH:mm:ss')}</td>
-                  <td className="border px-4 py-3 text-left align-top">{bl.noidung}</td>
-                  <td className="border px-4 py-3 align-top">
-                    <span
-                      className={`inline-block min-w-[120px] text-center px-3 py-1 rounded-full text-white font-semibold ${bl.trangthai ? "bg-green-500" : "bg-gray-500"
-                        }`}
-                    >
-                      {bl.trangthai ? "Đã duyệt" : "Chưa duyệt"}
-                    </span>
-                  </td>
-                  <td className="border px-4 py-3 align-top">{bl.id_tin}</td>
-                  <td className="border px-4 py-3 align-top">
-                    <button
-                      onClick={() => moDialogCapNhat(bl)}
-                      className={`cursor-pointer text-white whitespace-nowrap px-5 py-1 rounded text-sm font-semibold ${bl.trangthai ? "!bg-red-500" : "!bg-blue-500"}`}
-                    >
-                      {bl.trangthai ? "Bỏ duyệt" : "Duyệt"}
-                    </button>
-                  </td>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center flex-grow text-center mt-24 mb-16">
+            <CircularProgress />
+            <p className="mt-4 text-gray-600 text-2xl">Đang tải bình luận...</p>
+            <p className="mt-4 text-gray-600 text-2xl">Quá trình này có thể mất ít thời gian để khởi động api từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto max-h-[600px] overflow-y-auto border border-gray-300 rounded">
+            <table className="w-full text-base text-center">
+              <thead className="bg-slate-100 text-gray-700 font-semibold">
+                <tr>
+                  <th className="border px-4 py-3">Email</th>
+                  <th className="border px-4 py-3">Thời gian</th>
+                  <th className="border px-4 py-3">Nội dung</th>
+                  <th className="border px-4 py-3">Trạng thái</th>
+                  <th className="border px-4 py-3">ID tin</th>
+                  <th className="border px-4 py-3">Hành động</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {dsBinhLuan.map((bl) => (
+                  <tr key={bl.id_binhluan} className="hover:bg-gray-50">
+                    <td className="border px-4 py-3 align-top">{bl.email}</td>
+                    <td className="border px-4 py-3 align-top">{dayjs(bl.thoigian).format('DD/MM/YYYY HH:mm:ss')}</td>
+                    <td className="border px-4 py-3 text-left align-top">{bl.noidung}</td>
+                    <td className="border px-4 py-3 align-top">
+                      <span
+                        className={`inline-block min-w-[120px] text-center px-3 py-1 rounded-full text-white font-semibold ${bl.trangthai ? "bg-green-500" : "bg-gray-500"
+                          }`}
+                      >
+                        {bl.trangthai ? "Đã duyệt" : "Chưa duyệt"}
+                      </span>
+                    </td>
+                    <td className="border px-4 py-3 align-top">{bl.id_tin}</td>
+                    <td className="border px-4 py-3 align-top">
+                      <button
+                        onClick={() => moDialogCapNhat(bl)}
+                        disabled={isDuyet && binhLuanDangChon?.id_binhluan === bl.id_binhluan}
+                        className={`whitespace-nowrap px-5 py-1 rounded text-sm font-semibold text-white transition-colors duration-300
+    ${isDuyet && binhLuanDangChon?.id_binhluan === bl.id_binhluan
+                            ? bl.trangthai
+                              ? "bg-red-300 cursor-not-allowed"
+                              : "bg-blue-300 cursor-not-allowed"
+                            : bl.trangthai
+                              ? "bg-red-500 hover:bg-red-600 cursor-pointer"
+                              : "bg-blue-500 hover:bg-blue-600 cursor-pointer"
+                          }`}
+                      >
+                        {isDuyet && binhLuanDangChon?.id_binhluan === bl.id_binhluan
+                          ? bl.trangthai
+                            ? "Đang bỏ duyệt..."
+                            : "Đang duyệt..."
+                          : bl.trangthai
+                            ? "Bỏ duyệt"
+                            : "Duyệt"}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
 
         {/* Dialog xác nhận */}
         {xemDialog && binhLuanDangChon && (

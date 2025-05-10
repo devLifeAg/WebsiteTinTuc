@@ -8,6 +8,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from 'dayjs';
 import { showSuccessToast, showErrorToast } from '../../components/ToastService/ToastService';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface TinTuc {
   id_tin: number;
@@ -29,7 +30,8 @@ const ChiTietTinTuc = () => {
   const [news, setNews] = useState<TinTuc | null>(null);
   const [nhomTin] = useState(state?.nhomTin || []); // Nhận nhomTin từ state
   const [loaiTin] = useState(state?.loaiTin || []); // Nhận loaiTin từ state
-
+  const [loading, setLoading] = useState(true);
+  const [isSubmitComment, setIsSumbitComment] = useState(false);
   const [comments, setComments] = useState<any[]>([]);
   const [commentLimit, setCommentLimit] = useState(4);
   const [showForm, setShowForm] = useState(false);
@@ -56,9 +58,10 @@ const ChiTietTinTuc = () => {
             console.error("Không thể tải tin tức.");
           }
         }
-
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -106,6 +109,7 @@ const ChiTietTinTuc = () => {
     }
 
     try {
+      setIsSumbitComment(true);
       const res = await fetch("https://apiwebsitetintuc.onrender.com/api/binhluan", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -128,6 +132,8 @@ const ChiTietTinTuc = () => {
     } catch (err) {
       console.error("Lỗi gửi bình luận:", err);
       showErrorToast("Không thể kết nối đến máy chủ.");
+    } finally {
+      setIsSumbitComment(false);
     }
   };
 
@@ -145,162 +151,181 @@ const ChiTietTinTuc = () => {
 
 
 
-  if (!news) return <div>Đang tải...</div>;
+  // if (!news) return <div>Đang tải...</div>;
   // Tìm tên loại tin từ loaiTin
-  const loaiTinName = loaiTin.find((loai: any) => loai.id_loaitin === news.id_loaitin)?.ten_loaitin || "Chưa xác định";
-  const nhomTinId = loaiTin.find((loai: any) => loai.id_loaitin === news.id_loaitin)?.id_nhomtin;
-  // Tìm tên nhóm tin từ nhomTin
-  const nhomTinName = nhomTin.find((nhom: any) => nhom.id_nhomtin === nhomTinId)?.ten_nhomtin || "Chưa xác định";
+  const loaiTinName = news
+    ? loaiTin.find((loai: any) => loai.id_loaitin === news.id_loaitin)?.ten_loaitin || "Chưa xác định"
+    : "Chưa xác định";
+
+  const nhomTinId = news
+    ? loaiTin.find((loai: any) => loai.id_loaitin === news.id_loaitin)?.id_nhomtin
+    : null;
+
+  const nhomTinName = nhomTinId
+    ? nhomTin.find((nhom: any) => nhom.id_nhomtin === nhomTinId)?.ten_nhomtin || "Chưa xác định"
+    : "Chưa xác định";
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header nhomTin={nhomTin} loaiTin={loaiTin} />
 
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <main className="flex-grow mt-12 mb-8 flex gap-4">
-          <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
-            <div className="news-container">
-              {/* Hiển thị tên loại tin và nhóm tin */}
-              <div className="news-category">
-                <span className="category-name"><span className="category-group">{nhomTinName} &gt; {loaiTinName}</span></span>
-              </div>
-              <h1 className="news-title">{news.tieude}</h1>
-              <div className="flex justify-between items-center">
-                {news.tinhot && (
-                  <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">HOT</span>
-                )}
-                <p className="text-gray-600 ml-auto">Lượt xem: {news.solanxem}</p>
-              </div>
-              <p className="news-description">{news.mota}</p>
-              <img
-                src={`${news.hinhdaidien}`}
-                alt="Ảnh minh họa"
-                className="news-image"
-              />
-              <div className="news-content">
-                <p>{news.noidung}</p>
-              </div>
-              <div className="news-footer flex flex-col md:flex-row justify-between gap-2">
-                <span>
-                  Tác giả: <strong>{news.tacgia}</strong>
-                </span>
-                <span>Ngày đăng: {dayjs(news.ngaydangtin).format('DD/MM/YYYY HH:mm')}</span>
-              </div>
-
-              {/* BÌNH LUẬN */}
-              <div className="mt-12 p-4 bg-gray-50 rounded">
-                <h2 className="text-xl font-bold mb-4">Bình luận</h2>
-
-                {comments.map((bl, index) => {
-                  const isExpanded = expandedIndexes.includes(index);
-                  return (
-                    <div key={index} className="mb-4 border-b pb-2">
-                      <div className="flex flex-col sm:flex-row justify-between gap-2">
-                        <p className="font-semibold truncate overflow-hidden whitespace-nowrap max-w-full">{bl.email}</p>
-                        <p className="text-sm text-gray-500">
-                          {dayjs(bl.thoigian).format("DD/MM/YYYY HH:mm")}
-                        </p>
-                      </div>
-
-                      <p
-                        className={`${isExpanded ? "" : "line-clamp-2"
-                          } transition-all`}
-                      >
-                        {bl.noidung}
-                      </p>
-
-                      {bl.noidung.length > 100 && (
-                        <button
-                          onClick={() => toggleExpand(index)}
-                          className="text-blue-500 hover:underline mt-1 text-sm"
-                        >
-                          {isExpanded ? "Thu gọn" : "Xem thêm"}
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-
-                {comments.length >= commentLimit && (
-                  <button
-                    onClick={() => setCommentLimit(commentLimit + 4)}
-                    className="text-blue-600 hover:underline mt-2 me-20 cursor-pointer"
-                  >
-                    Xem thêm bình luận
-                  </button>
-                )}
-
-                {!showForm && (
-                  <button
-                    className="mt-4 text-blue-600 hover:underline cursor-pointer"
-                    onClick={() => setShowForm(true)}
-                  >
-                    Viết bình luận
-                  </button>
-                )}
-
-                {showForm && (
-                  <div className="mt-4 bg-white p-4 shadow rounded border">
-                    <div className="mb-2">
-                      <label className="block font-medium">Email</label>
-                      <input
-                        type="text"
-                        className="w-full border px-2 py-1"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      />
-                    </div>
-                    <div className="mb-2">
-                      <label className="block font-medium">Nội dung</label>
-                      <textarea
-                        className="w-full border px-2 py-1"
-                        rows={3}
-                        value={formData.noidung}
-                        onChange={(e) => setFormData({ ...formData, noidung: e.target.value })}
-                      />
-                    </div>
-                    <div className="mb-2">
-                      <label className="block font-medium">
-                        Mã xác nhận: <span className="font-mono bg-gray-200 px-2">{captcha}</span>
-                      </label>
-                      <input
-                        type="text"
-                        className="w-full border px-2 py-1"
-                        value={formData.maXacNhan}
-                        onChange={(e) => setFormData({ ...formData, maXacNhan: e.target.value })}
-                      />
-                    </div>
-                    <button
-                      onClick={handleCloseBinhLuan}
-                      className="bg-red-600 text-white px-4 py-2 rounded mt-2 me-4 cursor-pointer"
-                    >
-                      Đóng
-                    </button>
-                    <button
-                      onClick={handleSubmitComment}
-                      className="bg-blue-600 text-white px-4 py-2 rounded mt-2 cursor-pointer"
-                    >
-                      Gửi bình luận
-                    </button>
-                  </div>
-                )}
-              </div>
-
-            </div>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center flex-grow text-center mt-24 mb-16">
+            <CircularProgress />
+            <p className="mt-4 text-gray-600 text-2xl">Đang tải nội dung tin tức...</p>
+            <p className="mt-4 text-gray-600 text-2xl">Quá trình này có thể mất ít thời gian để khởi động api từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!</p>
           </div>
-
-
-
-          {showAdvanceSearch && (
-            <div className="w-3/10 mt-12">
-              <div className="sticky top-28">
-                <AdvanceSearch
-                  nhomTin={nhomTin}
-                  loaiTin={loaiTin}
+        ) : (
+          <main className="flex-grow mt-12 mb-8 flex gap-4">
+            <div className={showAdvanceSearch ? "w-7/10" : "w-full"}>
+              <div className="news-container">
+                {/* Hiển thị tên loại tin và nhóm tin */}
+                <div className="news-category">
+                  <span className="category-name"><span className="category-group">{nhomTinName} &gt; {loaiTinName}</span></span>
+                </div>
+                <h1 className="news-title">{news!.tieude}</h1>
+                <div className="flex justify-between items-center">
+                  {news!.tinhot && (
+                    <span className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">HOT</span>
+                  )}
+                  <p className="text-gray-600 ml-auto">Lượt xem: {news!.solanxem}</p>
+                </div>
+                <p className="news-description">{news!.mota}</p>
+                <img
+                  src={`${news!.hinhdaidien}`}
+                  alt="Ảnh minh họa"
+                  className="news-image"
                 />
+                <div className="news-content">
+                  <p>{news!.noidung}</p>
+                </div>
+                <div className="news-footer flex flex-col md:flex-row justify-between gap-2">
+                  <span>
+                    Tác giả: <strong>{news!.tacgia}</strong>
+                  </span>
+                  <span>Ngày đăng: {dayjs(news!.ngaydangtin).format('DD/MM/YYYY HH:mm')}</span>
+                </div>
+
+                {/* BÌNH LUẬN */}
+                <div className="mt-12 p-4 bg-gray-50 rounded">
+                  <h2 className="text-xl font-bold mb-4">Bình luận</h2>
+
+                  {comments.map((bl, index) => {
+                    const isExpanded = expandedIndexes.includes(index);
+                    return (
+                      <div key={index} className="mb-4 border-b pb-2">
+                        <div className="flex flex-col sm:flex-row justify-between gap-2">
+                          <p className="font-semibold truncate overflow-hidden whitespace-nowrap max-w-full">{bl.email}</p>
+                          <p className="text-sm text-gray-500">
+                            {dayjs(bl.thoigian).format("DD/MM/YYYY HH:mm")}
+                          </p>
+                        </div>
+
+                        <p
+                          className={`${isExpanded ? "" : "line-clamp-2"
+                            } transition-all`}
+                        >
+                          {bl.noidung}
+                        </p>
+
+                        {bl.noidung.length > 100 && (
+                          <button
+                            onClick={() => toggleExpand(index)}
+                            className="text-blue-500 hover:underline mt-1 text-sm"
+                          >
+                            {isExpanded ? "Thu gọn" : "Xem thêm"}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {comments.length >= commentLimit && (
+                    <button
+                      onClick={() => setCommentLimit(commentLimit + 4)}
+                      className="text-blue-600 hover:underline mt-2 me-20 cursor-pointer"
+                    >
+                      Xem thêm bình luận
+                    </button>
+                  )}
+
+                  {!showForm && (
+                    <button
+                      className="mt-4 text-blue-600 hover:underline cursor-pointer"
+                      onClick={() => setShowForm(true)}
+                    >
+                      Viết bình luận
+                    </button>
+                  )}
+
+                  {showForm && (
+                    <div className="mt-4 bg-white p-4 shadow rounded border">
+                      <div className="mb-2">
+                        <label className="block font-medium">Email</label>
+                        <input
+                          type="text"
+                          className="w-full border px-2 py-1"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <label className="block font-medium">Nội dung</label>
+                        <textarea
+                          className="w-full border px-2 py-1"
+                          rows={3}
+                          value={formData.noidung}
+                          onChange={(e) => setFormData({ ...formData, noidung: e.target.value })}
+                        />
+                      </div>
+                      <div className="mb-2">
+                        <label className="block font-medium">
+                          Mã xác nhận: <span className="font-mono bg-gray-200 px-2">{captcha}</span>
+                        </label>
+                        <input
+                          type="text"
+                          className="w-full border px-2 py-1"
+                          value={formData.maXacNhan}
+                          onChange={(e) => setFormData({ ...formData, maXacNhan: e.target.value })}
+                        />
+                      </div>
+                      <button
+                        onClick={handleCloseBinhLuan}
+                        className="bg-red-600 text-white px-4 py-2 rounded mt-2 me-4 cursor-pointer"
+                      >
+                        Đóng
+                      </button>
+                      <button
+                        onClick={handleSubmitComment}
+                        disabled={isSubmitComment}
+                        className={`px-4 py-2 rounded mt-2 ${isSubmitComment ? 'bg-blue-400' : 'bg-blue-600 cursor-pointer'
+                          } text-white`}
+                      >
+                        {!isSubmitComment ? 'Gửi bình luận' : 'Đang gửi...'}
+                      </button>
+                    </div>
+                  )}
+                </div>
+
               </div>
             </div>
-          )}
-        </main>
+
+
+
+            {showAdvanceSearch && (
+              <div className="w-3/10 mt-12">
+                <div className="sticky top-28">
+                  <AdvanceSearch
+                    nhomTin={nhomTin}
+                    loaiTin={loaiTin}
+                  />
+                </div>
+              </div>
+            )}
+          </main>
+        )}
+
       </LocalizationProvider>
 
       <Footer />

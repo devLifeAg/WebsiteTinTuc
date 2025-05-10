@@ -52,7 +52,7 @@ const TrangChu: React.FC = () => {
                     <div className="flex flex-col items-center justify-center flex-grow text-center mt-24 mb-16">
                         <CircularProgress />
                         <p className="mt-4 text-gray-600 text-2xl">Đang tải tin tức...</p>
-                        <p className="mt-4 text-gray-600 text-2xl">Quá trình có thể mất ít phút để khởi api từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!</p>
+                        <p className="mt-4 text-gray-600 text-2xl">Quá trình này có thể mất ít thời gian để khởi động api từ server do nó tự động ngủ khi không có hoạt động, mong thầy thông cảm ạ!</p>
                     </div>
                 ) : (
                     <main className="flex-grow mt-24 mb-16 flex gap-4">
