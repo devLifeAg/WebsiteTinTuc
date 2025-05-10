@@ -13,7 +13,7 @@ admin account:
 - username: admin
 - password: 123
 
-Backend and database hosted on railway
+Backend hosted on render, database hosted on aiven
 
 Github frontend: https://github.com/devLifeAg/WebsiteTinTuc
 
